@@ -46,17 +46,15 @@ case class LabelledCat(cat: CcgCat, override val label: Option[String]) extends 
   val category = cat.category
 }
 
-case object Noun extends CcgCat {
+trait TerminalCat extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = None
   def getBackwardApplication(left: CcgCat): Option[CcgCat] = None
-  val category = "N"
 }
 
-case object Sentence extends CcgCat {
-  def getForwardApplication(right: CcgCat): Option[CcgCat] = None
-  def getBackwardApplication(left: CcgCat): Option[CcgCat] = None
-  val category = "S"
-}
+case object N extends TerminalCat { val category = "N" }
+case object NP extends TerminalCat { val category = "NP" }
+case object PP extends TerminalCat { val category = "PP" }
+case object S extends TerminalCat { val category = "S" }
 
 case object IdentityCat extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = Some(right)

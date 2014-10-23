@@ -16,6 +16,7 @@ trait SemanticState {
       case Lambda(k) => k(arg)
       case Form(value) => Nonsense
       case Nonsense => Nonsense
+      case Ignored(tree) => arg match { case Ignored(tree2) => Ignored(s"$tree($tree2)"); case _ => Nonsense }
     }
   }
 }
@@ -27,3 +28,6 @@ case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState
 case class Form[LF](value: LF) extends SemanticState
 
 case object Nonsense extends SemanticState
+
+/// Ignores semantics and stores the dependency tree (for purely syntactic parses)
+case class Ignored(tree: String) extends SemanticState

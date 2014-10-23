@@ -3,8 +3,10 @@ package ccg
 import scala.util.parsing.combinator.RegexParsers
 
 object CategoryParser extends RegexParsers {
-  def noun: Parser[CcgCat] = "N" ^^ {_ => Noun}
-  def sentence: Parser[CcgCat] = "S" ^^ {_ => Sentence}
+  def n: Parser[CcgCat] = "N" ^^ {_ => N}
+  def np: Parser[CcgCat] = "NP" ^^ {_ => NP}
+  def pp: Parser[CcgCat] = "PP" ^^ {_ => PP}
+  def s: Parser[CcgCat] = "S" ^^ {_ => S}
 
   def backward: Parser[CcgCat] = (term ~ "\\" ~ term) ^^ { case t1 ~ _ ~ t2 => t1\t2 }
   def forward: Parser[CcgCat] = (term ~ "/" ~ term) ^^ { case t1 ~ _ ~ t2 => t1/t2 }
@@ -12,7 +14,7 @@ object CategoryParser extends RegexParsers {
 
   def labelledAtom: Parser[CcgCat] = (atom ~ "[" ~ "[a-z]*".r ~ "]") ^^ { case atom ~ _ ~ label ~ _ => atom(label) }
 
-  def atom: Parser[CcgCat] = noun | sentence
+  def atom: Parser[CcgCat] = n | np | pp | s
   def term = paren | labelledAtom | atom
   def op = backward | forward | forwardBackward
   def expr = op | term

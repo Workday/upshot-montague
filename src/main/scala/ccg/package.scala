@@ -1,8 +1,5 @@
 
 package object ccg {
-  val N = Noun
-  val S = Sentence
-
   // Simplified - no noun phrases
   val CompoundingNoun = N\N
   val Adjective = N|N
