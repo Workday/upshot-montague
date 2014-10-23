@@ -1,5 +1,8 @@
 
 package object ccg {
+  val conj = Conj // sometimes lowercase convention is used for conj
+
+  // @todo: do we need this?
   // Simplified - no noun phrases
   val CompoundingNoun = N\N
   val Adjective = N|N

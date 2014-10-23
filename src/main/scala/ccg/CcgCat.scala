@@ -73,3 +73,10 @@ case object BackwardIdentityCat extends CcgCat {
   def getBackwardApplication(left: CcgCat): Option[CcgCat] = Some(left)
   val category = "X\\X"
 }
+
+// Conjunction: (X\X)/X for any category X
+case object Conj extends CcgCat {
+  def getForwardApplication(right: CcgCat): Option[CcgCat] = Some(right\right)
+  def getBackwardApplication(right: CcgCat): Option[CcgCat] = None
+  val category = "(X\\X)/X"
+}

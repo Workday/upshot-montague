@@ -7,6 +7,7 @@ object CategoryParser extends RegexParsers {
   def np: Parser[CcgCat] = "NP" ^^ {_ => NP}
   def pp: Parser[CcgCat] = "PP" ^^ {_ => PP}
   def s: Parser[CcgCat] = "S" ^^ {_ => S}
+  def conj: Parser[CcgCat] = "[cC]onj".r ^^ {_ => Conj}
 
   def backward: Parser[CcgCat] = (term ~ "\\" ~ term) ^^ { case t1 ~ _ ~ t2 => t1\t2 }
   def forward: Parser[CcgCat] = (term ~ "/" ~ term) ^^ { case t1 ~ _ ~ t2 => t1/t2 }
@@ -14,7 +15,7 @@ object CategoryParser extends RegexParsers {
 
   def labelledAtom: Parser[CcgCat] = (atom ~ "[" ~ "[a-z]*".r ~ "]") ^^ { case atom ~ _ ~ label ~ _ => atom(label) }
 
-  def atom: Parser[CcgCat] = n | np | pp | s
+  def atom: Parser[CcgCat] = n | np | pp | s | conj
   def term = paren | labelledAtom | atom
   def op = backward | forward | forwardBackward
   def expr = op | term

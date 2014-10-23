@@ -128,7 +128,10 @@ object SemanticParser {
       "quick" -> Seq(N|N),
       "brown" -> Seq(N|N),
       "fox" -> Seq(N),
-      "jumps" -> Seq((S\NP)/PP),
+      "and" -> Seq(conj),
+      "silly" -> Seq(N|N),
+      "cat" -> Seq(N),
+      "jump" -> Seq((S\NP)/PP),
       "over" -> Seq(PP/NP),
       "a" -> Seq(NP/N),
       "lazy" -> Seq(N|N),
@@ -138,7 +141,7 @@ object SemanticParser {
     val parser = new SemanticParser[CcgCat]()
     parser.loadSyntacticDict(dict)
 
-    val result = parser.parse("The quick brown fox jumps over a lazy dog")
+    val result = parser.parse("The quick brown fox and the silly cat jump over a lazy dog")
     println(result.parses)
     // result.debugPrint()
   }
