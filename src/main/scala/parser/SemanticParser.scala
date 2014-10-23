@@ -22,14 +22,14 @@ trait SemanticParser[S <: SyntacticLabel[S]] extends CkyParserWithList[SemanticP
       val i = xs.iterator
       var set = Set[B]()
       while(i.hasNext) {
-        val o = i.next
+        val o = i.next()
         val b = f(o)
         if (!set(b)) {
           set += b
           builder += o
         }
       }
-      builder.result
+      builder.result()
     }
   }
 
@@ -67,7 +67,7 @@ trait SemanticParser[S <: SyntacticLabel[S]] extends CkyParserWithList[SemanticP
    */
   override protected def postStep(matrix: Chart[List[SemanticParseNode[S]]], tokens: IndexedSeq[String], iStart: Int, iEnd: Int): Unit = {
     super.postStep(matrix, tokens, iStart, iEnd)
-    if (!matrix(iStart, iEnd).isEmpty) {
+    if (matrix(iStart, iEnd).nonEmpty) {
       matrix(iStart, iEnd) =
         matrix(iStart, iEnd)
           .filter(_.semantic != Nonsense)

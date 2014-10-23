@@ -54,7 +54,7 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
     val n = chart.n
 
     (0 until n-1).flatMap(i =>
-      if (!chart(0,i).isEmpty && !chart(i+1, n-1).isEmpty)
+      if (chart(0,i).nonEmpty && chart(i+1, n-1).nonEmpty)
         Some(i+1)
       else
         None
@@ -62,7 +62,7 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
   }
 
   // Debug output
-  def debugString = {
+  def debugPrint() {
     val n = chart.n
     print("     ")
     for(iEnd <- 0 until n) {
@@ -81,14 +81,14 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
     println()
     // Now print the two-coverings
     for(i <- 0 until n-1) {
-      if (!chart(0,i).isEmpty && !chart(i+1, n-1).isEmpty)
+      if (chart(0,i).nonEmpty && chart(i+1, n-1).nonEmpty)
         println(s"2-covering parse with break after $i")
     }
 
     // Now print the number of empty spans covering each token
     val emptyCoveringsPerToken = scala.collection.mutable.ArrayBuffer.fill(n)(0)
     val totalCoveringsPerToken = scala.collection.mutable.ArrayBuffer.fill(n)(0)
-    println(emptyCoveringsPerToken.toString)
+    println(emptyCoveringsPerToken.toString())
     for(spanLen <- 1 to n;
         iStart <- 0 until n - spanLen + 1) {
       val iEnd = iStart + spanLen - 1
@@ -132,7 +132,7 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
         val iEnd = iStart + spanLen - 1
         eventuallyRecognizedChart(iStart, iEnd) = false
         val chartEntry = chart(iStart, iEnd).filter(filterfn)
-        if (!chartEntry.isEmpty) {
+        if (chartEntry.nonEmpty) {
           eventuallyRecognizedChart(iStart, iEnd) = true
         } else if (spanLen < n) {
           if (iStart > 0) {
