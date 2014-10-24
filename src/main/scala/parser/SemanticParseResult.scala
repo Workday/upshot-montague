@@ -14,6 +14,8 @@ import scala.reflect.ClassTag
 class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String], val chart: Chart[List[SemanticParseNode[S]]]) {
   def parses = chart(0, chart.n - 1)
 
+  def bestParse = parses.sortBy(node => -node.syntactic.score).head
+
   def totalChartSize = chart.allCells.map(_._2.size).sum
 
   def allChartParseNodes = chart.allCells.map(_._2).flatten

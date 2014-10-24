@@ -63,8 +63,9 @@ class SemanticParser[S <: SyntacticLabel[S]](override protected val timeLimitSec
       val parts = line.split(" +")
       val term = parts(0)
       val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
+      val prob = parts(4).toDouble
       if (parsedCategory.successful) {
-        val cat: S = parsedCategory.get.asInstanceOf[S]
+        val cat: S = (parsedCategory.get % prob).asInstanceOf[S]
         if (lexiconMap contains term) {
           lexiconMap(term).append(cat)
         } else {
@@ -163,11 +164,11 @@ object SemanticParser {
     )
 
     val parser = new SemanticParser[CcgCat]()
-    parser.loadSyntacticDict(dict)
-    // parser.loadCcgBankLexicon("CCGbank.00-24.lexicon")
+    // parser.loadSyntacticDict(dict)
+    parser.loadCcgBankLexicon("CCGbank.00-24.lexicon")
 
-    val result = parser.parse("The quick brown fox and the silly cat jump over a lazy dog")
-    println(result.parses)
+    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
+    println(result.bestParse)
     result.debugPrint()
   }
 }
