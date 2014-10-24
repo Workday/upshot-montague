@@ -4,6 +4,7 @@ import ccg._
 import cky._
 import semantics._
 
+import scala.io.Source
 import scala.collection.{mutable, IterableLike}
 import scala.collection.generic.CanBuildFrom
 
@@ -50,6 +51,29 @@ class SemanticParser[S <: SyntacticLabel[S]](override protected val timeLimitSec
     }
 
     loadSyntacticDict(multikeymap[String, S](syntacticDict))
+  }
+
+  def loadCcgBankLexicon(path: String) {
+    // @todo: Incorporate the probabilities of each ccg category for each term
+
+    val lexiconMap: mutable.Map[String, mutable.ListBuffer[S]] = mutable.Map()
+
+    val file = Source.fromFile(path)
+    for (line <- file.getLines()) {
+      val parts = line.split(" +")
+      val term = parts(0)
+      val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
+      if (parsedCategory.successful) {
+        val cat: S = parsedCategory.get.asInstanceOf[S]
+        if (lexiconMap contains term) {
+          lexiconMap(term).append(cat)
+        } else {
+          lexiconMap(term) = mutable.ListBuffer(cat)
+        }
+      }
+    }
+
+    loadSyntacticDict(lexiconMap.toMap.mapValues(_.toSeq))
   }
 
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
@@ -140,9 +164,10 @@ object SemanticParser {
 
     val parser = new SemanticParser[CcgCat]()
     parser.loadSyntacticDict(dict)
+    // parser.loadCcgBankLexicon("CCGbank.00-24.lexicon")
 
     val result = parser.parse("The quick brown fox and the silly cat jump over a lazy dog")
     println(result.parses)
-    // result.debugPrint()
+    result.debugPrint()
   }
 }
