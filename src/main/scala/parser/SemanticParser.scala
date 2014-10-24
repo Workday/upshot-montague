@@ -152,7 +152,7 @@ object SemanticParser {
       "the" -> Seq(NP/N),
       "quick" -> Seq(N|N),
       "brown" -> Seq(N|N),
-      "fox" -> Seq(N),
+      "ox" -> Seq(N),
       "and" -> Seq(conj),
       "silly" -> Seq(N|N),
       "cat" -> Seq(N),
