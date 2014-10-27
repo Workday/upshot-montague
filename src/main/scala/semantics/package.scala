@@ -94,8 +94,7 @@ package object semantics {
             } else {
               Nonsense
             }
-          case _ =>
-            Nonsense
+          case _ => Nonsense
         }
     }
     Lambda(step(fn))

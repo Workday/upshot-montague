@@ -101,7 +101,7 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
 case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: ParseToken, spans: Spans) extends SemanticParseNode(s, m) {
   override def toString: String = toStringHelp(withSemantics = true)
   def toStringHelp(indent: String = "", currentIndent: String = "", withSemantics: Boolean = false): String = {
-    val str = "('" + s.toString + "', " + parseToken.toString() + "')"
+    val str = "('" + s.toString + "', " + parseToken.toString() + ")"
     if (withSemantics) m.toString + ", '" + str
     else str
   }

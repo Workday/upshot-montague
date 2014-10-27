@@ -21,7 +21,7 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
   }
 
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
-    str.split(" ").map(_.toLowerCase)
+    str.trim.toLowerCase.split("\\s+")
   }
   
   override protected def dictLookup(parseToken: ParseToken, spans: Spans): List[Node] = {
@@ -91,7 +91,7 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
 
 object SemanticParser { 
   def main(args: Array[String]) {
-    val localDict = ParserDict.fromMap(
+    /*val localDict = ParserDict.fromMap(
       WithDummySemantics(
         Map(
           "the" -> Seq(NP/N),
@@ -114,7 +114,27 @@ object SemanticParser {
     //val parser = new SemanticParser[CcgCat](localDict)
     val parser = new SemanticParser[CcgCat](ccgBankDict)
 
-    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
+    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")*/
+
+    val mathDict = ParserDict.fromMap(
+      Map(
+        "plus" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x + y}}))),
+        "minus" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x - y}}))),
+        "times" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x * y}}))),
+        "(" -> Seq((NP/N, identity)),
+        ")" -> Seq((N\NP, identity)),
+        "what is" -> Seq((IdentityCat, identity)),
+        "?" -> Seq((IdentityCat, identity))
+      )
+    ).withMatcher(IntegerMatcher(i => i))
+
+    def parenTokenizer(str: String) = {
+      str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
+    }
+
+    val parser = new SemanticParser[CcgCat](mathDict)
+    val result = parser.parse("What is (2 plus 3) times (4 plus 5)?", parenTokenizer)
+
     println(result.bestParse)
     result.debugPrint()
   }
