@@ -122,7 +122,6 @@ package object semantics {
    *    conjunction[LFNode] {
    *      case (Filter(r1: RelationLike, p: Predicate), Filter(r2: RelationLike, q: Predicate)) if r1 equals r2 =>
    *        Done[LFNode](Filter(Filter(r1, p), q))
-   *      case _ => NoParse()
    *    }
    */
   def conjunction[LF](joiner: PartialFunction[(LF, LF), SemanticState]): SemanticState = {

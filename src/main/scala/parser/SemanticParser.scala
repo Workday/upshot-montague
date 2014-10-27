@@ -118,9 +118,9 @@ object SemanticParser {
 
     val mathDict = ParserDict.fromMap(
       Map(
-        "plus" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x + y}}))),
-        "minus" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x - y}}))),
-        "times" -> Seq(((N\N)/N, lift2[Integer]({ case x => {case y => x * y}}))),
+        "plus" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x + y}}))),
+        "minus" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x - y}}))),
+        "times" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x * y}}))),
         "(" -> Seq((NP/N, identity)),
         ")" -> Seq((N\NP, identity)),
         "what is" -> Seq((IdentityCat, identity)),
@@ -133,7 +133,7 @@ object SemanticParser {
     }
 
     val parser = new SemanticParser[CcgCat](mathDict)
-    val result = parser.parse("What is (2 plus 3) times (4 plus 5)?", parenTokenizer)
+    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer)
 
     println(result.bestParse)
     result.debugPrint()
