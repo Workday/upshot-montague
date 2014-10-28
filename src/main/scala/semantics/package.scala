@@ -53,9 +53,9 @@ package object semantics {
    *    }
    */
   def conjunction[LF](joiner: PartialFunction[(LF, LF), SemanticState]): SemanticState = {
-    Func[LF] { g: SemanticState =>
-      Func[LF] { f: SemanticState =>
-        Func[LF] { x: SemanticState =>
+    Lambda[LF] { g: SemanticState =>
+      Lambda[LF] { f: SemanticState =>
+        Lambda[LF] { x: SemanticState =>
           val fx: SemanticState = f.apply(x)
           val gx: SemanticState = g.apply(x)
           (fx, gx) match {

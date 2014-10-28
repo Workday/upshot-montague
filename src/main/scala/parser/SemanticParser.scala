@@ -4,9 +4,8 @@ import ccg._
 import cky._
 import semantics._
 
-import scala.collection.{mutable, IterableLike}
+import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
-import scala.reflect.ClassTag
 
 class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
                                              override protected val timeLimitSecs: Double = 10.0) extends CkyParserWithList[SemanticParseNode[S]] {
