@@ -6,6 +6,7 @@ import semantics._
 
 import scala.collection.{mutable, IterableLike}
 import scala.collection.generic.CanBuildFrom
+import scala.reflect.ClassTag
 
 class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
                                              override protected val timeLimitSecs: Double = 10.0) extends CkyParserWithList[SemanticParseNode[S]] {
@@ -118,9 +119,9 @@ object SemanticParser {
 
     val mathDict = ParserDict.fromMap(
       Map(
-        "plus" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x + y}}))),
-        "minus" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x - y}}))),
-        "times" -> Seq(((N\N)/N, lift2[Integer]({case y => {case x => x * y}}))),
+        "plus" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x + y}})),
+        "minus" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x - y}})),
+        "times" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x * y}})),
         "(" -> Seq((NP/N, identity)),
         ")" -> Seq((N\NP, identity)),
         "what is" -> Seq((IdentityCat, identity)),

@@ -13,7 +13,7 @@ package semantics
 trait SemanticState {
   def apply(arg: SemanticState): SemanticState = {
     this match {
-      case Lambda(k) => k(arg)
+      case Func(k) => k(arg)
       case Form(value) => Nonsense
       case Nonsense => Nonsense
       case Ignored(tree) => arg match { case Ignored(tree2) => Ignored(s"$tree($tree2)"); case _ => Nonsense }
@@ -21,8 +21,10 @@ trait SemanticState {
   }
 }
 
-/// Lambda means the semantic state is in progress, and is still consuming arguments.
-case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState
+/// Func means the semantic state is in progress, and is still consuming arguments.
+/// Func is the internal representation of lambda functions -- use Lambda instead to define
+/// lambda functions
+case class Func[LF](k: SemanticState => SemanticState) extends SemanticState
 
 /// Form (β-normal form) means the semantic state is not consuming arguments.
 case class Form[LF](value: LF) extends SemanticState
@@ -31,3 +33,26 @@ case object Nonsense extends SemanticState
 
 /// Ignores semantics and stores the dependency tree (for purely syntactic parses)
 case class Ignored(tree: String) extends SemanticState
+
+object Lambda {
+  def apply[LF](func: LF => _): SemanticState = Func {
+    case Form(value) => {
+      value match {
+        case lf: LF =>
+          val result = func(lf)
+          result match {
+            case fn: SemanticState => fn
+            case res: LF => Form(res)
+          }
+        case _ => Nonsense
+      }
+    }
+    case _ => Nonsense
+  }
+}
+
+object λ {
+  def apply[LF](func: LF => _): SemanticState = {
+    Lambda(func)
+  }
+}
