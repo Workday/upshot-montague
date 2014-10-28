@@ -29,7 +29,11 @@ case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState
 /// Form (β-normal form) means the semantic state is not consuming arguments.
 case class Form[LF](value: LF) extends SemanticState
 
+/// Represents a parse with no valid semantic outputs
 case object Nonsense extends SemanticState
+
+/// Represents a parse with more than one valid semantic output
+case class Ambiguous(options: Set[SemanticState]) extends SemanticState
 
 /// Ignores semantics and stores the dependency tree (for purely syntactic parses)
 case class Ignored(tree: String) extends SemanticState

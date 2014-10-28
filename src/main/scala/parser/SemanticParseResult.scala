@@ -2,7 +2,7 @@ package parser
 
 import ccg.SyntacticLabel
 import cky.Chart
-import semantics.Form
+import semantics._
 
 import scala.reflect.ClassTag
 
@@ -14,7 +14,19 @@ import scala.reflect.ClassTag
 class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String], val chart: Chart[List[SemanticParseNode[S]]]) {
   def parses = chart(0, chart.n - 1)
 
-  def bestParse = parses.sortBy(node => -node.syntactic.score).headOption
+  def bestParse = {
+    parses.sortBy(node => -node.syntactic.score)
+      .headOption
+  }
+
+  def semantics: SemanticState = {
+    val semanticResults = semanticCompleteParses.map(_.semantic).toSet
+    semanticResults.size match {
+      case 0 => Nonsense
+      case 1 => semanticResults.head
+      case _ => Ambiguous(semanticResults)
+    }
+  }
 
   def totalChartSize = chart.allCells.map(_._2.size).sum
 

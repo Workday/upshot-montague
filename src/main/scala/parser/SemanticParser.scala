@@ -133,7 +133,8 @@ object SemanticParser {
     }
 
     val parser = new SemanticParser[CcgCat](mathDict)
-    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer)
+    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer) 
+    assert(result.semantics == Form(20))
 
     println(result.bestParse)
     result.debugPrint()

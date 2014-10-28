@@ -11,7 +11,7 @@ package object semantics {
    * For example, a simple AND between two Filter nodes operating on the same relation can be defined as follows:
    *    conjunction[LFNode] {
    *      case (Filter(r1: RelationLike, p: Predicate), Filter(r2: RelationLike, q: Predicate)) if r1 equals r2 =>
-   *        Done[LFNode](Filter(Filter(r1, p), q))
+   *        Done[LFNode](Filter(Filter(r1, p), q))+7
    *    }
    */
   def conjunction[LF](joiner: PartialFunction[(LF, LF), SemanticState]): SemanticState = {
