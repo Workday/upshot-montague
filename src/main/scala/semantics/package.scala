@@ -1,44 +1,6 @@
-import scala.reflect.ClassTag
-
 package object semantics {
-  // assumes children have all been parsed
-  // may not be the case
-  // but we can have parameterized ones that
-  // allow the children to not be parsed
-  def allDoneFunction[LF : ClassTag](fn: List[LF] => LF): List[SemanticState] => SemanticState = {
-    list: List[SemanticState] =>
-      val formsList = list.flatMap {
-        case Form(value: LF) => Some(value)
-        case _ => None
-      }
-
-      if (formsList.size < list.size) {
-        Nonsense
-      } else {
-        Form(fn(formsList))
-      }
-  }
-
-  def allDoneFunctionWithMatch[LF : ClassTag](fn: PartialFunction[List[LF], LF]): List[SemanticState] => SemanticState = {
-    list: List[SemanticState] =>
-      val formsList = list.flatMap {
-        case Form(value: LF) => Some(value)
-        case _ => None
-      }
-
-      if (formsList.size < list.size) {
-        Nonsense
-      } else {
-        if (fn.isDefinedAt(formsList)) {
-          try {
-            Form(fn(formsList))
-          } catch {
-            case _: MatchError => Nonsense
-          }
-        } else {
-          Nonsense
-        }
-      }
+  def identity: SemanticState = new SemanticState {
+    override def apply(arg: SemanticState): SemanticState = arg
   }
 
   /**
@@ -65,9 +27,5 @@ package object semantics {
         }
       }
     }
-  }
-
-  def identity: SemanticState = new SemanticState {
-    override def apply(arg: SemanticState): SemanticState = arg
   }
 }
