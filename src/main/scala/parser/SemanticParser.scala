@@ -119,9 +119,9 @@ object SemanticParser {
 
     val mathDict = ParserDict.fromMap(
       Map(
-        "plus" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x + y}})),
-        "minus" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x - y}})),
-        "times" -> Seq(((N\N)/N, λ {y: Integer => λ {x: Integer => x * y}})),
+        "plus" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x + y}})),
+        "minus" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x - y}})),
+        "times" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x * y}})),
         "(" -> Seq((NP/N, identity)),
         ")" -> Seq((N\NP, identity)),
         "what is" -> Seq((IdentityCat, identity)),
