@@ -75,7 +75,7 @@ object ParserDict {
       val term = parts(0)
       val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
       val prob = parts(4).toDouble
-      if (parsedCategory.successful) i{
+      if (parsedCategory.successful) {
         val cat: CcgCat = parsedCategory.get % prob
         if (lexiconMap contains term) {
           lexiconMap(term).append(cat)
