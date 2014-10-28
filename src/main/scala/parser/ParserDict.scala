@@ -75,7 +75,7 @@ object ParserDict {
       val term = parts(0)
       val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
       val prob = parts(4).toDouble
-      if (parsedCategory.successful) {
+      if (parsedCategory.successful) i{
         val cat: CcgCat = parsedCategory.get % prob
         if (lexiconMap contains term) {
           lexiconMap(term).append(cat)
@@ -85,14 +85,30 @@ object ParserDict {
       }
     }
 
-    MapDict[CcgCat](WithDummySemantics(lexiconMap.toMap.mapValues(s => s.toSeq)))
+    MapDict[CcgCat](
+      DictImplicits.Syntax2Semantics(
+        lexiconMap.toMap.mapValues(s => s.toSeq)
+      )
+    )
   }
 }
 
-object WithDummySemantics {
-  def apply[S](syntaxMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
-    for ((term, entries) <- syntaxMap) yield {
+object DictImplicits {
+  implicit def SingleEntry2MultiEntry[S](inputMap: Map[String, (S, SemanticState)]): Map[String, Seq[(S, SemanticState)]] = {
+    for ((term, entry) <- inputMap) yield {
+      term -> Seq(entry)
+    }
+  }
+
+  implicit def Syntax2Semantics[S](inputMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
+    for ((term, entries) <- inputMap) yield {
       term -> entries.map(_ -> Ignored(term))
+    }
+  }
+
+  implicit def SingleEntrySyntax2Semantics[S](inputMap: Map[String, S]): Map[String, Seq[(S, SemanticState)]] = {
+    for ((term, entry) <- inputMap) yield {
+      term -> Seq((entry, Ignored(term)))
     }
   }
 }

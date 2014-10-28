@@ -3,6 +3,7 @@ package parser
 import ccg._
 import cky._
 import semantics._
+import DictImplicits._
 
 import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
@@ -89,42 +90,39 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
   }
 }
 
-object SemanticParser { 
+object SemanticParser {
   def main(args: Array[String]) {
-    /*val localDict = ParserDict.fromMap(
-      WithDummySemantics(
-        Map(
-          "the" -> Seq(NP/N),
-          "quick" -> Seq(N|N),
-          "brown" -> Seq(N|N),
-          "ox" -> Seq(N),
-          "and" -> Seq(conj),
-          "silly" -> Seq(N|N),
-          "cat" -> Seq(N),
-          "jump" -> Seq((S\NP)/PP),
-          "over" -> Seq(PP/NP),
-          "a" -> Seq(NP/N),
-          "lazy" -> Seq(N|N),
-          "dog" -> Seq(N)
-        )
+    val localDict = ParserDict.fromMap(
+      Map(
+        "the" -> NP/N,
+        "quick" -> (N|N),
+        "brown" -> (N|N),
+        "ox" -> N,
+        "and" -> conj,
+        "silly" -> (N|N),
+        "cat" -> N,
+        "jump" -> (S\NP)/PP,
+        "over" -> PP/NP,
+        "a" -> NP/N,
+        "lazy" -> (N|N),
+        "dog" -> N
       )
     )
     val ccgBankDict = ParserDict.fromCcgBankLexicon("CCGbank.00-24.lexicon")
 
     //val parser = new SemanticParser[CcgCat](localDict)
-    val parser = new SemanticParser[CcgCat](ccgBankDict)
-
-    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")*/
+    //val parser = new SemanticParser[CcgCat](ccgBankDict)
+    //val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
 
     val mathDict = ParserDict.fromMap(
       Map(
-        "plus" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x + y}})),
-        "minus" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x - y}})),
-        "times" -> Seq(((N\N)/N, λ {y: Int => λ {x: Int => x * y}})),
-        "(" -> Seq((NP/N, identity)),
-        ")" -> Seq((N\NP, identity)),
-        "what is" -> Seq((IdentityCat, identity)),
-        "?" -> Seq((IdentityCat, identity))
+        "plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
+        "minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}}),
+        "times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}}),
+        "(" -> (NP/N, identity),
+        ")" -> (N\NP, identity),
+        "what is" -> (IdentityCat, identity),
+        "?" -> (IdentityCat, identity)
       )
     ).withMatcher(IntegerMatcher(i => i))
 
@@ -133,7 +131,7 @@ object SemanticParser {
     }
 
     val parser = new SemanticParser[CcgCat](mathDict)
-    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer) 
+    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer)
     assert(result.semantics == Form(20))
 
     println(result.bestParse)
