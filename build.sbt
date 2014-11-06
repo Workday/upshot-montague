@@ -2,4 +2,7 @@ name := "montague"
 
 version := "0.0-SNAPSHOT"
 
-libraryDependencies += "commons-lang" % "commons-lang" % "2.6"
+libraryDependencies ++= Seq(
+  "commons-lang" % "commons-lang" % "2.6",
+  "org.scala-lang" % "scala-reflect" % "2.10.4"
+)

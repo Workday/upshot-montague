@@ -1,15 +1,11 @@
 package parser
 
-import ccg._
-import semantics._
+trait TokenMatcher[T] extends (String => Seq[T])
 
-trait TokenMatcher[S] extends (String => Seq[(S, SemanticState)])
-
-// matches integers as CCG nouns, and applies given transformation from Int to logical form representation
-case class IntegerMatcher[LF](intToState: Int => LF) extends TokenMatcher[CcgCat] {
+object IntegerMatcher extends TokenMatcher[Int] {
   def apply(str: String) = {
     try {
-      Seq((N, Form[LF](intToState(Integer.parseInt(str)))))
+      Seq(Integer.parseInt(str))
     } catch {
       case nfe: NumberFormatException => Nil
     }

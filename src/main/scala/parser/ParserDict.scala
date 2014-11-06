@@ -6,67 +6,106 @@ import semantics.{Ignored, SemanticState}
 import scala.collection.mutable
 import scala.io.Source
 
-trait ParserDict[S] extends (String => Seq[(S, SemanticState)]) {
-  def combine(other: ParserDict[S]): ParserDict[S] = {
-    ChainedDict(this, other)
+trait DictAdder[S, U] {
+  def apply(dict: ParserDict[S], pair: U): ParserDict[S]
+}
+
+object DictAdder {
+  implicit def stringSyntaxAdder[S, T <: S] = new DictAdder[S, (String, T)] {
+    def apply(dict: ParserDict[S], pair: (String, T)) = {
+      val term = pair._1
+      val syntax = pair._2
+      dict.withTerm(term, Seq((syntax, Ignored(term))))
+    }
   }
 
-  def withMatcher(matcher: String => Seq[(S, SemanticState)]): ParserDict[S] = {
-    ChainedDict(this, MatcherDict(matcher))
+  implicit def stringSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (String, (T, SemanticState))] {
+    def apply(dict: ParserDict[S], pair: (String, (T, SemanticState))) = {
+      val term = pair._1
+      val syntax = pair._2._1
+      val semantics = pair._2._2
+      dict.withTerm(term, Seq((syntax, semantics)))
+    }
+  }
+
+  implicit def seqStringSyntaxAdder[S, T <: S] = new DictAdder[S, (Seq[String], T)] {
+    def apply(dict: ParserDict[S], pair: (Seq[String], T)) = {
+      val terms = pair._1
+      val syntax = pair._2
+      dict.withTerms(terms.map(t => t -> Seq((syntax, Ignored(t)))) toMap)
+    }
+  }
+
+  implicit def seqStringSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (Seq[String], (T, SemanticState))] {
+    def apply(dict: ParserDict[S], pair: (Seq[String], (T, SemanticState))) = {
+      val terms = pair._1
+      val syntax = pair._2._1
+      val semantics = pair._2._2
+      dict.withTerms(terms.map(t => t -> Seq((syntax, semantics))) toMap)
+    }
+  }
+
+  implicit def matcherSemanticsAdder[S, T <: S, V, W <: String => Seq[V], Y <: SemanticState] = new DictAdder[S, (W, (T, V => Y))] {
+    def apply(dict: ParserDict[S], pair: (W, (T, V => Y))) = {
+      val matcher = pair._1
+      val syntax = pair._2._1
+      val semantics = pair._2._2
+      val func = (str: String) => matcher(str).map(m => (syntax, semantics(m)))
+      dict.withFunc(func)
+    }
+  }
+
+  implicit def matcherSyntaxSemanticsAdder[S, T <: S, V, W <: String => Seq[V], Y <: SemanticState] = new DictAdder[S, (W, (V => T, V => Y))] {
+    def apply(dict: ParserDict[S], pair: (W, (V => T, V => Y))) = {
+      val matcher = pair._1
+      val syntax = pair._2._1
+      val semantics = pair._2._2
+      val func = (str: String) => matcher(str).map(m => (syntax(m), semantics(m)))
+      dict.withFunc(func)
+    }
   }
 }
 
-case class MatcherDict[S](matcher: String => Seq[(S, SemanticState)]) extends ParserDict[S] {
-  def apply(str: String): Seq[(S, SemanticState)] = {
-    matcher(str)
+case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String, Seq[(S, SemanticState)]](),
+                         funcs: Seq[String => Seq[(S, SemanticState)]] = Seq()) extends (String => Seq[(S, SemanticState)]) {
+  def +[U](pair: U)(implicit adder: DictAdder[S, U]): ParserDict[S] = {
+    adder(this, pair)
   }
-}
 
-case class MapDict[S](map: Map[String, Seq[(S, SemanticState)]]) extends ParserDict[S] {
+  def withTerm(term: String, entries: Seq[(S, SemanticState)]): ParserDict[S] = {
+    ParserDict(map.updated(term, entries), funcs)
+  }
+
+  def withTerms(termsAndEntries: Map[String, Seq[(S, SemanticState)]]): ParserDict[S] = {
+    ParserDict(map ++ termsAndEntries, funcs)
+  }
+
+  def withFunc(func: String => Seq[(S, SemanticState)]) = {
+    ParserDict(map, funcs :+ func)
+  }
+
   def apply(str: String): Seq[(S, SemanticState)] = {
+    getMapEntries(str) ++ getFuncEntries(str)
+  }
+
+  private def getMapEntries(str: String): Seq[(S, SemanticState)] = {
     for (entry <- map.getOrElse(str, Seq())) yield {
+      entry
+    }
+  }
+
+  private def getFuncEntries(str: String): Seq[(S, SemanticState)] = {
+    for {
+      func <- funcs
+      entry <- func(str)
+    } yield {
       entry
     }
   }
 }
 
-case class ChainedDict[S](dict1: ParserDict[S], dict2: ParserDict[S]) extends ParserDict[S] {
-  def apply(str: String): Seq[(S, SemanticState)] = {
-    dict1(str) ++ dict2(str)
-  }
-}
-
 object ParserDict {
-  def fromMap[S](map: Map[String, Seq[(S, SemanticState)]]): ParserDict[S] = {
-    MapDict[S](map)
-  }
-
-  def fromMultiMap[S](map: Map[Seq[String], Seq[(S, SemanticState)]]): ParserDict[S] = {
-    /**
-     * Convert a map from Seq[A] -> Seq[B], to A -> Seq[B], flattening out the A's and concatenating any
-     * duplicate entries of an A
-     */
-    def multikeymap[A, B](keymap: Map[Seq[A], Seq[B]]): Map[A, Seq[B]] = {
-      val map = mutable.LinkedHashMap[A, Seq[B]]()
-      for {
-        (keys, values) <- keymap
-        key <- keys
-      } {
-        if (map.contains(key)) {
-          map(key) ++= values
-        } else {
-          map(key) = values
-        }
-      }
-      map.toMap
-    }
-
-    fromMap(multikeymap[String, (S, SemanticState)](map))
-  }
-
   def fromCcgBankLexicon(path: String): ParserDict[CcgCat] = {
-    // @todo: Incorporate the probabilities of each ccg category for each term
-
     val lexiconMap: mutable.Map[String, mutable.ListBuffer[CcgCat]] = mutable.Map()
 
     val file = Source.fromFile(path)
@@ -85,30 +124,12 @@ object ParserDict {
       }
     }
 
-    MapDict[CcgCat](
-      DictImplicits.Syntax2Semantics(
-        lexiconMap.toMap.mapValues(s => s.toSeq)
-      )
-    )
-  }
-}
-
-object DictImplicits {
-  implicit def SingleEntry2MultiEntry[S](inputMap: Map[String, (S, SemanticState)]): Map[String, Seq[(S, SemanticState)]] = {
-    for ((term, entry) <- inputMap) yield {
-      term -> Seq(entry)
-    }
+    ParserDict[CcgCat](syntaxToSemantics(lexiconMap.toMap.mapValues(s => s.toSeq)))
   }
 
-  implicit def Syntax2Semantics[S](inputMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
+  private def syntaxToSemantics[S](inputMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
     for ((term, entries) <- inputMap) yield {
       term -> entries.map(_ -> Ignored(term))
-    }
-  }
-
-  implicit def SingleEntrySyntax2Semantics[S](inputMap: Map[String, S]): Map[String, Seq[(S, SemanticState)]] = {
-    for ((term, entry) <- inputMap) yield {
-      term -> Seq((entry, Ignored(term)))
     }
   }
 }

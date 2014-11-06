@@ -3,7 +3,6 @@ package parser
 import ccg._
 import cky._
 import semantics._
-import DictImplicits._
 
 import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
@@ -92,39 +91,34 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
 
 object SemanticParser {
   def main(args: Array[String]) {
-    val localDict = ParserDict.fromMap(
-      Map(
-        "the" -> NP/N,
-        "quick" -> (N|N),
-        "brown" -> (N|N),
-        "ox" -> N,
-        "and" -> conj,
-        "silly" -> (N|N),
-        "cat" -> N,
-        "jump" -> (S\NP)/PP,
-        "over" -> PP/NP,
-        "a" -> NP/N,
-        "lazy" -> (N|N),
-        "dog" -> N
-      )
-    )
+    val localDict = ParserDict[CcgCat]() +
+      ("the" -> NP/N) +
+      ("quick" -> (N|N)) +
+      ("brown" -> (N|N)) +
+      ("ox" -> N) +
+      ("and" -> conj) +
+      ("silly" -> (N|N)) +
+      ("cat" -> N) +
+      ("jump" -> (S\NP)/PP) +
+      ("over" -> PP/NP) +
+      ("a" -> NP/N) +
+      ("lazy" -> (N|N)) +
+      ("dog" -> N)
+
     val ccgBankDict = ParserDict.fromCcgBankLexicon("CCGbank.00-24.lexicon")
 
     //val parser = new SemanticParser[CcgCat](localDict)
     //val parser = new SemanticParser[CcgCat](ccgBankDict)
     //val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
 
-    val mathDict = ParserDict.fromMap(
-      Map(
-        "plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
-        "minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}}),
-        "times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}}),
-        "(" -> (NP/N, identity),
-        ")" -> (N\NP, identity),
-        "what is" -> (IdentityCat, identity),
-        "?" -> (IdentityCat, identity)
-      )
-    ).withMatcher(IntegerMatcher(i => i))
+    val mathDict = ParserDict[CcgCat]() +
+      ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
+      ("minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
+      ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
+      ("(" -> (NP/N, identity)) +
+      (")" -> (N\NP, identity)) +
+      (Seq("what is", "?") -> (IdentityCat, identity)) +
+      (IntegerMatcher -> (N, {i: Int => Form(i)}))
 
     def parenTokenizer(str: String) = {
       str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
