@@ -42,10 +42,15 @@ object λ {
   def apply[LF](func: LF => _): SemanticState = {
     Lambda(func)
   }
+
+  def apply[LF](func: PartialFunction[LF, _]): SemanticState = {
+    Lambda(func)
+  }
 }
 
 object SemanticImplicits {
   implicit def LFToSemanticState[LF](value: LF): SemanticState = Form(value)
+
   implicit def FuncToSemanticState[LF](func: LF => _): (SemanticState => SemanticState) = {
     case Form(value) =>
       value match {
@@ -54,6 +59,24 @@ object SemanticImplicits {
           result match {
             case fn: SemanticState => fn
             case res: LF => Form(res)
+          }
+        case _ => Nonsense
+      }
+    case _ => Nonsense
+  }
+
+  implicit def PartialFuncToSemanticState[LF](func: PartialFunction[LF, _]): (SemanticState => SemanticState) = {
+    case Form(value) =>
+      value match {
+        case lf: LF =>
+          if (func.isDefinedAt(lf)) {
+            val result = func(lf)
+            result match {
+              case fn: SemanticState => fn
+              case res: LF => Form(res)
+            }
+          } else {
+            Nonsense
           }
         case _ => Nonsense
       }
