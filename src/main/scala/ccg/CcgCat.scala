@@ -68,24 +68,46 @@ case object S extends TerminalCat { val category = "S" }
 case object IdentityCat extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = Some(right)
   def getBackwardApplication(left: CcgCat): Option[CcgCat] = Some(left)
-  val category = "X|X"
+  val category = "(X|X)"
 }
 
 case object ForwardIdentityCat extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = Some(right)
   def getBackwardApplication(left: CcgCat): Option[CcgCat] = None
-  val category = "X/X"
+  val category = "(X/X)"
 }
 
 case object BackwardIdentityCat extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = None
   def getBackwardApplication(left: CcgCat): Option[CcgCat] = Some(left)
-  val category = "X\\X"
+  val category = "(X\\X)"
+}
+
+// Helper object to enable shorthand for identity categories:
+//    X|X = IdentityCat
+//    X/X = ForwardIdentityCat
+//    X\X = BackwardIdentityCat
+case object X extends CcgCat {
+  val category = ""
+  def getForwardApplication(right: CcgCat): Option[CcgCat] = None
+  def getBackwardApplication(left: CcgCat): Option[CcgCat] = None
+
+  override def |(arg: CcgCat): CcgCat = arg match {
+    case X => IdentityCat
+  }
+
+  override def /(arg: CcgCat): CcgCat = arg match {
+    case X => ForwardIdentityCat
+  }
+
+  override def \(arg: CcgCat): CcgCat = arg match {
+    case X => BackwardIdentityCat
+  }
 }
 
 // Conjunction: (X\X)/X for any category X
 case object Conj extends CcgCat {
   def getForwardApplication(right: CcgCat): Option[CcgCat] = Some(right\right)
   def getBackwardApplication(right: CcgCat): Option[CcgCat] = None
-  val category = "(X\\X)/X"
+  val category = "((X\\X)/X)"
 }

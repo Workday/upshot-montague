@@ -117,7 +117,7 @@ object SemanticParser {
       ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
       ("(" -> (NP/N, identity)) +
       (")" -> (N\NP, identity)) +
-      (Seq("what is", "?") -> (IdentityCat, identity)) +
+      (Seq("what is", "?") -> (X|X, identity)) +
       (IntegerMatcher -> (N, {i: Int => Form(i)}))
 
     def parenTokenizer(str: String) = {
