@@ -19,12 +19,28 @@ object DictAdder {
     }
   }
 
+  implicit def stringSeqSyntaxAdder[S, T <: S] = new DictAdder[S, (String, Seq[T])] {
+    def apply(dict: ParserDict[S], pair: (String, Seq[T])) = {
+      val term = pair._1
+      val syntax = pair._2
+      dict.withTerm(term, syntax.map(s => s -> Ignored(term)))
+    }
+  }
+
   implicit def stringSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (String, (T, SemanticState))] {
     def apply(dict: ParserDict[S], pair: (String, (T, SemanticState))) = {
       val term = pair._1
       val syntax = pair._2._1
       val semantics = pair._2._2
       dict.withTerm(term, Seq((syntax, semantics)))
+    }
+  }
+
+  implicit def stringSeqSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (String, Seq[(T, SemanticState)])] {
+    def apply(dict: ParserDict[S], pair: (String, Seq[(T, SemanticState)])) = {
+      val term = pair._1
+      val entries = pair._2
+      dict.withTerm(term, entries)
     }
   }
 

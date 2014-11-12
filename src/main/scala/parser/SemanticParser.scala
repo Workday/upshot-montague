@@ -115,6 +115,10 @@ object SemanticParser {
       ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
       ("minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
       ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
+      ("plus/minus" -> Seq(
+        ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
+        ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})
+      )) +
       ("(" -> (NP/N, identity)) +
       (")" -> (N\NP, identity)) +
       (Seq("what is", "?") -> (X|X, identity)) +
@@ -125,8 +129,10 @@ object SemanticParser {
     }
 
     val parser = new SemanticParser[CcgCat](mathDict)
-    val result = parser.parse("What is (2 plus 3) times (8 minus 4)?", parenTokenizer)
-    assert(result.semantics == Form(20))
+    val result = parser.parse("What is (2 plus 3) times (8 plus/minus 4)?", parenTokenizer)
+
+    println(result.semantics)
+    assert(result.semantics == Ambiguous(Set(Form(60), Form(20))))
 
     println(result.bestParse)
     result.debugPrint()
