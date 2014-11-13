@@ -5,6 +5,8 @@ package object ccg {
   case object PP extends TerminalCat { val category = "PP" }
   case object S extends TerminalCat { val category = "S" }
 
+  val conj = Conj // sometimes lowercase convention is used for conj
+
   // Helper object to enable shorthand for identity categories:
   //    X|X = IdentityCat
   //    X/X = ForwardIdentityCat
@@ -27,6 +29,4 @@ package object ccg {
       case _ => X
     }
   }
-
-  val conj = Conj // sometimes lowercase convention is used for conj
 }

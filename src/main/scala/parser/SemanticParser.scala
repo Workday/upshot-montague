@@ -118,6 +118,7 @@ object SemanticParser {
     val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
 
     println(result.bestParse)
+    //println(result.bestParse.get.toSvg) // still working on getting the SVG stuff working
     result.debugPrint()
   }
 

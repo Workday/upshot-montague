@@ -6,6 +6,80 @@ import semantics.{Ignored, SemanticState}
 import scala.collection.mutable
 import scala.io.Source
 
+case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String, Seq[(S, SemanticState)]](),
+                         funcs: Seq[String => Seq[(S, SemanticState)]] = Seq()) extends (String => Seq[(S, SemanticState)]) {
+  def +[U](pair: U)(implicit adder: DictAdder[S, U]): ParserDict[S] = {
+    adder(this, pair)
+  }
+
+  def withTerm(term: String, entries: Seq[(S, SemanticState)]): ParserDict[S] = {
+    val updatedEntries = map.getOrElse(term, Seq()) ++ entries
+    ParserDict(map.updated(term, updatedEntries), funcs)
+  }
+
+  def withTerms(termsAndEntries: Map[String, Seq[(S, SemanticState)]]): ParserDict[S] = {
+    val newMap = mutable.Map(map.toSeq: _*)
+    for ((term, entries) <- termsAndEntries) {
+      val updatedEntries = map.getOrElse(term, Seq()) ++ entries
+      newMap(term) = updatedEntries
+    }
+    ParserDict(newMap.toMap, funcs)
+  }
+
+  def withFunc(func: String => Seq[(S, SemanticState)]) = {
+    ParserDict(map, funcs :+ func)
+  }
+
+  def apply(str: String): Seq[(S, SemanticState)] = {
+    getMapEntries(str) ++ getFuncEntries(str)
+  }
+
+  private def getMapEntries(str: String): Seq[(S, SemanticState)] = {
+    for (entry <- map.getOrElse(str, Seq())) yield {
+      entry
+    }
+  }
+
+  private def getFuncEntries(str: String): Seq[(S, SemanticState)] = {
+    for {
+      func <- funcs
+      entry <- func(str)
+    } yield {
+      entry
+    }
+  }
+}
+
+object ParserDict {
+  def fromCcgBankLexicon(path: String): ParserDict[CcgCat] = {
+    val lexiconMap: mutable.Map[String, mutable.ListBuffer[CcgCat]] = mutable.Map()
+
+    val file = Source.fromFile(path)
+    for (line <- file.getLines()) {
+      val parts = line.split(" +")
+      val term = parts(0)
+      val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
+      val prob = parts(4).toDouble
+      if (parsedCategory.successful) {
+        val cat: CcgCat = parsedCategory.get % prob
+        if (lexiconMap contains term) {
+          lexiconMap(term).append(cat)
+        } else {
+          lexiconMap(term) = mutable.ListBuffer(cat)
+        }
+      }
+    }
+
+    ParserDict[CcgCat](syntaxToSemantics(lexiconMap.toMap.mapValues(s => s.toSeq)))
+  }
+
+  private def syntaxToSemantics[S](inputMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
+    for ((term, entries) <- inputMap) yield {
+      term -> entries.map(_ -> Ignored(term))
+    }
+  }
+}
+
 trait DictAdder[S, U] {
   def apply(dict: ParserDict[S], pair: U): ParserDict[S]
 }
@@ -78,74 +152,6 @@ object DictAdder {
       val semantics = pair._2._2
       val func = (str: String) => matcher(str).map(m => (syntax(m), semantics(m)))
       dict.withFunc(func)
-    }
-  }
-}
-
-case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String, Seq[(S, SemanticState)]](),
-                         funcs: Seq[String => Seq[(S, SemanticState)]] = Seq()) extends (String => Seq[(S, SemanticState)]) {
-  def +[U](pair: U)(implicit adder: DictAdder[S, U]): ParserDict[S] = {
-    adder(this, pair)
-  }
-
-  def withTerm(term: String, entries: Seq[(S, SemanticState)]): ParserDict[S] = {
-    ParserDict(map.updated(term, entries), funcs)
-  }
-
-  def withTerms(termsAndEntries: Map[String, Seq[(S, SemanticState)]]): ParserDict[S] = {
-    ParserDict(map ++ termsAndEntries, funcs)
-  }
-
-  def withFunc(func: String => Seq[(S, SemanticState)]) = {
-    ParserDict(map, funcs :+ func)
-  }
-
-  def apply(str: String): Seq[(S, SemanticState)] = {
-    getMapEntries(str) ++ getFuncEntries(str)
-  }
-
-  private def getMapEntries(str: String): Seq[(S, SemanticState)] = {
-    for (entry <- map.getOrElse(str, Seq())) yield {
-      entry
-    }
-  }
-
-  private def getFuncEntries(str: String): Seq[(S, SemanticState)] = {
-    for {
-      func <- funcs
-      entry <- func(str)
-    } yield {
-      entry
-    }
-  }
-}
-
-object ParserDict {
-  def fromCcgBankLexicon(path: String): ParserDict[CcgCat] = {
-    val lexiconMap: mutable.Map[String, mutable.ListBuffer[CcgCat]] = mutable.Map()
-
-    val file = Source.fromFile(path)
-    for (line <- file.getLines()) {
-      val parts = line.split(" +")
-      val term = parts(0)
-      val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
-      val prob = parts(4).toDouble
-      if (parsedCategory.successful) {
-        val cat: CcgCat = parsedCategory.get % prob
-        if (lexiconMap contains term) {
-          lexiconMap(term).append(cat)
-        } else {
-          lexiconMap(term) = mutable.ListBuffer(cat)
-        }
-      }
-    }
-
-    ParserDict[CcgCat](syntaxToSemantics(lexiconMap.toMap.mapValues(s => s.toSeq)))
-  }
-
-  private def syntaxToSemantics[S](inputMap: Map[String, Seq[S]]): Map[String, Seq[(S, SemanticState)]] = {
-    for ((term, entries) <- inputMap) yield {
-      term -> entries.map(_ -> Ignored(term))
     }
   }
 }
