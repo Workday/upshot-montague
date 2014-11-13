@@ -105,8 +105,11 @@ case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: 
     if (withSemantics) m.toString + ", '" + str
     else str
   }
-  // @todo Can I get around having a toDotStringHelp here that duplicates NQTerminal's?
-  def toDotStringHelp(pre: String): String = "NOTIMPLEMENTED"
+
+  def toDotStringHelp(pre: String): String = {
+    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + escapeJava(s.toString + "\n" + m.toString + "\n" + parseTokenString) + "\"];\n" +
+      "{rank = max; \"tokens\"; " + pre + "}\n"
+  }
 
   def parseTokens = List(parseToken)
   def terminals = List(this)

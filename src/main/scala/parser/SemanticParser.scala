@@ -118,7 +118,7 @@ object SemanticParser {
     val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
 
     println(result.bestParse)
-    //println(result.bestParse.get.toSvg) // still working on getting the SVG stuff working
+    //println(result.bestParse.get.toSvg)
     result.debugPrint()
   }
 
@@ -149,6 +149,7 @@ object SemanticParser {
     assert(result.semantics == Ambiguous(Set(Form(60), Form(20))))
 
     println(result.bestParse)
+    //println(result.bestParse.get.toSvg)
     result.debugPrint()
   }
 }
