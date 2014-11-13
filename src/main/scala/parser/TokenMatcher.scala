@@ -9,9 +9,7 @@ trait TokenMatcher[S] extends (String => Seq[(S, SemanticState)])
 case class IntegerMatcher[LF](intToState: Int => LF) extends TokenMatcher[CcgCat] {
   def apply(str: String) = {
     try {
-      Seq(
-        (N, Form[LF](intToState(Integer.parseInt(str))))
-      )
+      Seq((N, Form[LF](intToState(Integer.parseInt(str)))))
     } catch {
       case nfe: NumberFormatException => Nil
     }
