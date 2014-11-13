@@ -9,5 +9,6 @@ trait SyntacticLabel[S <: SyntacticLabel[S]] {
   def deriveRightward(arg: S): List[S]
   def deriveLeftward(arg: S): List[S]
 
-  val score: Double
+  // optionally, syntactic labels can have scores attached to them (e.g. for probabilistic parsing)
+  val score: Double = 1.0
 }

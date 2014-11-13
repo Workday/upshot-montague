@@ -91,6 +91,7 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
 
 object SemanticParser {
   def main(args: Array[String]) {
+    ccgbankExample()
     mathExample()
   }
 

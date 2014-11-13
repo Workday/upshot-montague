@@ -1,15 +1,32 @@
 
 package object ccg {
-  val conj = Conj // sometimes lowercase convention is used for conj
+  case object N extends TerminalCat { val category = "N" }
+  case object NP extends TerminalCat { val category = "NP" }
+  case object PP extends TerminalCat { val category = "PP" }
+  case object S extends TerminalCat { val category = "S" }
 
-  // @todo: do we need this?
-  // Simplified - no noun phrases
-  val CompoundingNoun = N\N
-  val Adjective = N|N
-  val Preposition = N/(N\N)
-  val OperatingPreposition = (N\(N\N))/N // takes a noun forward, then takes a compounding non backward
-  // this is for "sum of revenue" which we basically transform to "revenue sum" or "average of revenue" which turns into "revenue average"
-  // we have "average" and "sum" pre-defined as "compounding noun" category
-  // so i made "of" transform the compounding nouns into the form "X of Y" where X is the compounding noun and we transform it to "Y X" like "revenue average"
-  val TransitiveVerb = (S\N)/N
+  // Helper object to enable shorthand for identity categories:
+  //    X|X = IdentityCat
+  //    X/X = ForwardIdentityCat
+  //    X\X = BackwardIdentityCat
+  case object X extends TerminalCat {
+    val category = ""
+
+    override def |(arg: CcgCat): CcgCat = arg match {
+      case X => IdentityCat
+      case _ => X
+    }
+
+    override def /(arg: CcgCat): CcgCat = arg match {
+      case X => ForwardIdentityCat
+      case _ => X
+    }
+
+    override def \(arg: CcgCat): CcgCat = arg match {
+      case X => BackwardIdentityCat
+      case _ => X
+    }
+  }
+
+  val conj = Conj // sometimes lowercase convention is used for conj
 }
