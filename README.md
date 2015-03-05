@@ -1,4 +1,6 @@
 montague
 ========
 
-A little semantic parsing library
+`montague` is a little CCG semantic parsing library for Scala.
+
+Awesome examples coming soon.
