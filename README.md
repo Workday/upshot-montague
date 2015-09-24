@@ -13,7 +13,7 @@ Authors
 
 * Thomas Am Kim
 * Joseph Turian
-* Aleksander Nisnevich
+* Aleksandr Nisnevich
 
 Background
 ----------
