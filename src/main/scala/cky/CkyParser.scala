@@ -29,7 +29,6 @@ trait CkyParser[C] {
   def parseToChart(tokens: IndexedSeq[String])(implicit ev: ClassTag[C]): Chart[C] = {
     val startTimeNano = System.nanoTime()
     val chart = new Chart[C](tokens)
-    // logger.debug("parse(tokens " + tokens + ")")
     var abort = false
     for(spanLen <- 1 to tokens.length) {
       for(iStart <- 0 to tokens.length - spanLen) {
@@ -50,12 +49,10 @@ trait CkyParser[C] {
         }
         val durationSecs = (System.nanoTime() - startTimeNano) / (1000.0 * 1000.0 * 1000.0)
         if (durationSecs > timeLimitSecs && !abort) {
-          // logger.error("Parsing " + tokens + " exceeded time limit of " + timeLimitSecs + " secs, aborting parse and returning partially parsed chart!")
           abort = true
         }
       }
     }
-    // logger.debug("final chart:\n" + chart.toString)
     chart
   }
 
@@ -81,7 +78,6 @@ trait CkyParserWithList[T] extends CkyParser[List[T]] {
   protected def concat(a: List[T], b: List[T]): List[T] = a ++ b
 
   protected def coalesce(left: List[T], right: List[T]): List[T] = {
-    // println(left, right)
     for(leftEntry <- left;
         rightEntry <- right;
         newEntry <- derive(leftEntry, rightEntry))
