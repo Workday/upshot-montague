@@ -49,16 +49,44 @@ Getting Started
 
 ### English-to-calculator arithmetic
 
+See [`example.ArithmeticParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/ArithmeticParser.scala).
+
 In this example, English is parsed into a semantic form, which is
 then realized as arithmetic operations.
 
 ```sh
-sbt runMain [blah blah blah]
+> sbt "runMain example.ArithmeticParser (3 + 5) * 2"
+Input: (3 + 5) * 2
+Output: Form(16)
+```
+
+Because CCG doesn't have a built-in notion of precedence, all binary operations have equal precedence, and thus
+syntactic ambiguity can result:
+
+```sh
+> sbt "runMain example.ArithmeticParser 3 + 5 * 2"
+Input: 3 + 5 * 2
+Output: Ambiguous(Set(Form(13), Form(16)))
+```
+
+You can also add ambiguity through the use of terms with multiple semantic definitions, such as `+/-`:
+
+```sh
+> sbt "runMain example.ArithmeticParser (3 +/- 5) * 2"
+Input: (3 +/- 5) * 2
+Output: Ambiguous(Set(Form(16), Form(-4)))
+```
+
+The `Else` clause in the lexicon definition allows this parser to ignore all unrecognized tokens:
+```
+> sbt "runMain example.ArithmeticParser Could you please tell me, what is 100 + 100 ?"
+Input: Could you please tell me, what is 100 + 100 ?
+Output: Form(200)
 ```
 
 ### English-to-semantic structure
 
-Using the CCGBank lexicon, we parse English sentences into 
+Using the CCGBank lexicon, we parse English sentences into
 
 ```sh
 sbt runMain [blah blah blah]
