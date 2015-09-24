@@ -24,13 +24,12 @@ Background
 `montague` takes its name from [Montague
 Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
 idea that human language can be expressed through formal logic and
-lambda-calculus.  Specifically, `montague` implements [Combinatory
-Categorial Grammar
+lambda-calculus. The process of inferring this formal representation
+from natural language is called "semantic parsing". Specifically,
+`montague` implements [Combinatory Categorial Grammar
 (CCG)](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar), a
 particular grammar formalism that has become popular recently for
 semantic parsing.
-
-[Semantic parsing]
 
 History
 -------
