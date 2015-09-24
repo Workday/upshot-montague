@@ -49,7 +49,7 @@ Getting Started
 
 ### English-to-calculator arithmetic
 
-See [example.ArithmeticParser](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/ArithmeticParser.scala).
+See [`example.ArithmeticParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/ArithmeticParser.scala).
 
 In this example, English is parsed into a semantic form, which is
 then realized as arithmetic operations.
