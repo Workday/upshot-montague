@@ -93,20 +93,20 @@ object DictAdder {
     }
   }
 
-  implicit def stringSeqSyntaxAdder[S, T <: S] = new DictAdder[S, (String, Seq[T])] {
-    def apply(dict: ParserDict[S], pair: (String, Seq[T])) = {
-      val term = pair._1
-      val syntax = pair._2
-      dict.withTerm(term, syntax.map(s => s -> Ignored(term)))
-    }
-  }
-
   implicit def stringSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (String, (T, SemanticState))] {
     def apply(dict: ParserDict[S], pair: (String, (T, SemanticState))) = {
       val term = pair._1
       val syntax = pair._2._1
       val semantics = pair._2._2
       dict.withTerm(term, Seq((syntax, semantics)))
+    }
+  }
+
+  implicit def stringSeqSyntaxAdder[S, T <: S] = new DictAdder[S, (String, Seq[T])] {
+    def apply(dict: ParserDict[S], pair: (String, Seq[T])) = {
+      val term = pair._1
+      val syntax = pair._2
+      dict.withTerm(term, syntax.map(s => s -> Ignored(term)))
     }
   }
 
@@ -132,6 +132,22 @@ object DictAdder {
       val syntax = pair._2._1
       val semantics = pair._2._2
       dict.withTerms(terms.map(t => t -> Seq((syntax, semantics))) toMap)
+    }
+  }
+
+  implicit def seqStringSeqSyntaxAdder[S, T <: S] = new DictAdder[S, (Seq[String], Seq[T])] {
+    def apply(dict: ParserDict[S], pair: (Seq[String], Seq[T])) = {
+      val terms = pair._1
+      val syntax = pair._2
+      dict.withTerms(terms.map(t => t -> syntax.map(s => s -> Ignored(t))) toMap)
+    }
+  }
+
+  implicit def seqStringSeqSyntaxSemanticsAdder[S, T <: S] = new DictAdder[S, (Seq[String], Seq[(T, SemanticState)])] {
+    def apply(dict: ParserDict[S], pair: (Seq[String], Seq[(T, SemanticState)])) = {
+      val terms = pair._1
+      val entries = pair._2
+      dict.withTerms(terms.map(t => t -> entries) toMap)
     }
   }
 
