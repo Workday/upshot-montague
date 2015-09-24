@@ -11,3 +11,9 @@ object IntegerMatcher extends TokenMatcher[Int] {
     }
   }
 }
+
+object AnythingMatcher extends TokenMatcher[String] {
+  def apply(str: String) = {
+    Seq(str)
+  }
+}

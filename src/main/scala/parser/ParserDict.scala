@@ -7,14 +7,17 @@ import scala.collection.mutable
 import scala.io.Source
 
 case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String, Seq[(S, SemanticState)]](),
-                         funcs: Seq[String => Seq[(S, SemanticState)]] = Seq()) extends (String => Seq[(S, SemanticState)]) {
+                         funcs: Seq[String => Seq[(S, SemanticState)]] = Nil,
+                         fallbacks: Seq[String => (S, SemanticState)] = Nil)
+extends (String => Seq[(S, SemanticState)]) {
+
   def +[U](pair: U)(implicit adder: DictAdder[S, U]): ParserDict[S] = {
     adder(this, pair)
   }
 
   def withTerm(term: String, entries: Seq[(S, SemanticState)]): ParserDict[S] = {
     val updatedEntries = map.getOrElse(term, Seq()) ++ entries
-    ParserDict(map.updated(term, updatedEntries), funcs)
+    ParserDict(map.updated(term, updatedEntries), funcs, fallbacks)
   }
 
   def withTerms(termsAndEntries: Map[String, Seq[(S, SemanticState)]]): ParserDict[S] = {
@@ -23,15 +26,22 @@ case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String,
       val updatedEntries = map.getOrElse(term, Seq()) ++ entries
       newMap(term) = updatedEntries
     }
-    ParserDict(newMap.toMap, funcs)
+    ParserDict(newMap.toMap, funcs, fallbacks)
   }
 
   def withFunc(func: String => Seq[(S, SemanticState)]) = {
-    ParserDict(map, funcs :+ func)
+    ParserDict(map, funcs :+ func, fallbacks)
+  }
+
+  def withFallback(fallback: String => (S, SemanticState)) = {
+    ParserDict(map, funcs, fallbacks :+ fallback)
   }
 
   def apply(str: String): Seq[(S, SemanticState)] = {
-    getMapEntries(str) ++ getFuncEntries(str)
+    getMapEntries(str) ++ getFuncEntries(str) match {
+      case Nil => getFallbackEntries(str)
+      case entries => entries
+    }
   }
 
   private def getMapEntries(str: String): Seq[(S, SemanticState)] = {
@@ -46,6 +56,16 @@ case class ParserDict[S](map: Map[String, Seq[(S, SemanticState)]] = Map[String,
       entry <- func(str)
     } yield {
       entry
+    }
+  }
+
+  private def getFallbackEntries(str: String): Seq[(S, SemanticState)] = {
+    if (str contains " ") {
+      Nil  // only fallback if str is a single token!
+    } else {
+      for (fallback <- fallbacks) yield {
+        fallback(str)
+      }
     }
   }
 }
@@ -160,7 +180,7 @@ object DictAdder {
   }
 
   implicit def matcherSemanticsAdder[S, T <: S, V, W <: String => Seq[V], Y <: SemanticState] = new DictAdder[S, (W, (T, V => Y))] {
-    // e.g. dict + (matcherFunc -> category)
+    // e.g. dict + (matcherFunc -> (category, {matchedTerm => semantics}))
     def apply(dict: ParserDict[S], pair: (W, (T, V => Y))) = {
       val matcher = pair._1
       val syntax = pair._2._1
@@ -171,7 +191,7 @@ object DictAdder {
   }
 
   implicit def matcherSyntaxSemanticsAdder[S, T <: S, V, W <: String => Seq[V], Y <: SemanticState] = new DictAdder[S, (W, (V => T, V => Y))] {
-    // e.g. dict + (matcherFunc -> (category, semantics))
+    // e.g. dict + (matcherFunc -> ({matchedTerm => category}, {matchedTerm => semantics}))
     def apply(dict: ParserDict[S], pair: (W, (V => T, V => Y))) = {
       val matcher = pair._1
       val syntax = pair._2._1
@@ -180,4 +200,25 @@ object DictAdder {
       dict.withFunc(func)
     }
   }
+
+  implicit def elseSyntaxAdder[S, T <: S] = new DictAdder[S, (Else.type, T)] {
+    // e.g. dict + (Else -> category)
+    def apply(dict: ParserDict[S], pair: (Else.type, T)) = {
+      val syntax = pair._2
+      val func = (str: String) => (syntax, Ignored(str))
+      dict.withFallback(func)
+    }
+  }
+
+  implicit def elseSyntaxSemanticsAdder[S, T <: S, Y <: SemanticState] = new DictAdder[S, (Else.type, (T, String => Y))] {
+    // e.g. dict + (Else -> (category, {matchedTerm => semantics}))
+    def apply(dict: ParserDict[S], pair: (Else.type, (T, String => Y))) = {
+      val syntax = pair._2._1
+      val semantics = pair._2._2
+      val func = (str: String) => (syntax, semantics(str))
+      dict.withFallback(func)
+    }
+  }
 }
+
+object Else
