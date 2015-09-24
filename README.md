@@ -6,11 +6,6 @@ montague
 You can build on this code to translate English-into-SQL,
 English-into-API commands, etc.
 
-It takes its name from [Montague
-Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
-idea that human language can be expressed through formal logic and
-lambda-calculus.
-
 Authors
 -------
 
@@ -21,13 +16,31 @@ Authors
 Background
 ----------
 
+"Oh, get ahold of yourself. Nobody's proposing that we parse English."
+— Larry Wall in `<199709032332.QAA21669@wall.org>`
+
+`montague` takes its name from [Montague
+Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
+idea that human language can be expressed through formal logic and
+lambda-calculus.  Specifically, `montague` implements [Combinatory
+Categorial Grammar
+(CCG)](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar), a
+particular grammar formalism that has become popular recently for
+semantic parsing.
+
+[Semantic parsing]
+
+History
+-------
+
 At UPSHOT (acquired by Workday), we built a semantic parser that
-translated English into SQL, and---later---English into SOQL (the
+translated English into SQL, and—later—English into SOQL (the
 Salesforce query language).
 
-We are open-sourcing the semantic parser component, in the hopes
-that other people find it useful and educational. We plan to clean
-up the SQL-generation code and release that too.
+This package improves upon and open-sources the CCG-based semantic
+parser component of UPSHOT. We hope that that other people find it
+useful and educational. We plan to clean up the SQL-generation code
+and release that too.
 
 Getting Started
 ---------------
