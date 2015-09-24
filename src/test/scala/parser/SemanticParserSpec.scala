@@ -6,7 +6,7 @@ import semantics._
 
 class SemanticParserSpec extends FlatSpec {
   it should "perform a syntactic parse with a simple dictionary" in {
-    val localDict = ParserDict[CcgCat]() +
+    val lexicon = ParserDict[CcgCat]() +
       ("the" -> NP/N) +
       ("quick" -> (N|N)) +
       ("brown" -> (N|N)) +
@@ -16,11 +16,10 @@ class SemanticParserSpec extends FlatSpec {
       ("cat" -> N) +
       ("jump" -> (S\NP)/PP) +
       ("over" -> PP/NP) +
-      ("a" -> NP/N) +
       ("lazy" -> (N|N)) +
       ("dog" -> N)
 
-    val parser = new SemanticParser[CcgCat](localDict)
+    val parser = new SemanticParser[CcgCat](lexicon)
 
     val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
     assert(result.bestParse.isDefined)
@@ -32,10 +31,30 @@ class SemanticParserSpec extends FlatSpec {
     assert(parse.semantic == Ignored("jump(over(the(lazy(dog))))(and(the(silly(cat)))(the(quick(brown(ox)))))"))
   }
 
+  it should "perform a syntactic parse with a lexicon loaded from CCGbank" in {
+    // Load a (very) abridged CCGbank lexicon, with just the words we need to parse our example sentence
+    val ccgBankLexicon = ParserDict.fromCcgBankLexicon("src/test/resources/CCGbank.00-24.lexicon.partial")
+    val parser = new SemanticParser[CcgCat](ccgBankLexicon)
+
+    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
+
+    // Because there are so many different entries for each of these words in our test CCGbank lexicon,
+    // we expect > 100 different parses
+    assert(result.parses.size > 100)
+
+    val bestParse: SemanticParseNode[CcgCat] = result.bestParse.get
+    val worstParse: SemanticParseNode[CcgCat] = result.parses.sortBy(node => node.syntactic.score).head
+
+    // Make sure we get what we expect for the highest-scoring ("best") parse
+    assert(bestParse.semantic == Ignored("jump(over(the(lazy(dog))))(and(the(silly(cat)))(the(quick(brown(ox)))))"))
+    // and get something different for other parses, such as the lowest-scoring ("worst") parse
+    assert(worstParse.semantic != Ignored("jump(over(the(lazy(dog))))(and(the(silly(cat)))(the(quick(brown(ox)))))"))
+  }
+
   it should "perform a semantic parse with a simple mathematical dictionary" in {
     case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
 
-    val mathDict = ParserDict[CcgCat]() +
+    val mathLexicon = ParserDict[CcgCat]() +
       ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
       ("minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
       ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
@@ -53,7 +72,7 @@ class SemanticParserSpec extends FlatSpec {
       str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
     }
 
-    val parser = new SemanticParser[CcgCat](mathDict)
+    val parser = new SemanticParser[CcgCat](mathLexicon)
 
     val result = parser.parse("What is (2 plus 3) times (8 plus/minus 4)?", parenTokenizer)
 
