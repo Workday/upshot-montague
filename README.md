@@ -95,8 +95,8 @@ sbt runMain [blah blah blah]
 If you have the CCGBank lexicon and would like to use it, [blah blah blah]
 
 If you don't have CCGBank lexicon, you can download an older version
-of it from (Julia
-Hockenmaier)[http://juliahmr.cs.illinois.edu/CCGlexicon/]:
+of it from [Julia
+Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
 
 ```sh
 pushd data/ && wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && gunzip lexicon.wsj02-21.gz && popd
