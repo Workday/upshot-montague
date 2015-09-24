@@ -23,7 +23,7 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
     str.trim.toLowerCase.split("\\s+")
   }
-  
+
   override protected def dictLookup(parseToken: ParseToken, spans: Spans): List[Node] = {
     (for (entry <- dict(parseToken.tokenString))
       yield Terminal(entry._1, entry._2, parseToken, spans)
@@ -86,70 +86,5 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
       }
       builder.result()
     }
-  }
-}
-
-object SemanticParser {
-  def main(args: Array[String]) {
-    ccgbankExample()
-    mathExample()
-  }
-
-  def ccgbankExample() {
-    val localDict = ParserDict[CcgCat]() +
-      ("the" -> NP/N) +
-      ("quick" -> (N|N)) +
-      ("brown" -> (N|N)) +
-      ("ox" -> N) +
-      ("and" -> conj) +
-      ("silly" -> (N|N)) +
-      ("cat" -> N) +
-      ("jump" -> (S\NP)/PP) +
-      ("over" -> PP/NP) +
-      ("a" -> NP/N) +
-      ("lazy" -> (N|N)) +
-      ("dog" -> N)
-
-    val ccgBankDict = ParserDict.fromCcgBankLexicon("CCGbank.00-24.lexicon")
-
-    //val parser = new SemanticParser[CcgCat](localDict)
-    val parser = new SemanticParser[CcgCat](ccgBankDict)
-
-    val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
-
-    println(result.bestParse)
-    //println(result.bestParse.get.toSvg)
-    result.debugPrint()
-  }
-
-  def mathExample() {
-    case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
-    val mathDict = ParserDict[CcgCat]() +
-      ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
-      ("minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
-      ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
-      ("plus/minus" -> Seq( // example of ambiguous definition
-        ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
-        ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})
-      )) +
-      ("(" -> (Paren/N, identity)) +
-      (")" -> (N\Paren, identity)) +
-      (Seq("what is", "?") -> (X|X, identity)) + // X|X is the identity CCG category
-      (IntegerMatcher -> (N, {i: Int => Form(i)}))
-
-    // We need a custom tokenizer to separate parentheses from adjoining terms
-    def parenTokenizer(str: String) = {
-      str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
-    }
-
-    val parser = new SemanticParser[CcgCat](mathDict)
-    val result = parser.parse("What is (2 plus 3) times (8 plus/minus 4)?", parenTokenizer)
-
-    println(result.semantics)
-    assert(result.semantics == Ambiguous(Set(Form(60), Form(20))))
-
-    println(result.bestParse)
-    //println(result.bestParse.get.toSvg)
-    result.debugPrint()
   }
 }
