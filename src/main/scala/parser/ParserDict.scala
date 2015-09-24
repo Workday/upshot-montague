@@ -71,17 +71,25 @@ extends (String => Seq[(S, SemanticState)]) {
 }
 
 object ParserDict {
-  def fromCcgBankLexicon(path: String): ParserDict[CcgCat] = {
+  def fromCcgBankLexicon(path: String): ParserDict[CcgCat] = fromSpaceSeparatedLexicon(path, 0, 4)
+
+  /**
+   * The old-style CCG Bank lexicons (http://juliahmr.cs.illinois.edu/CCGlexicon/) had a slightly different
+   * column ordering.
+   */
+  def fromOldCcgBankLexicon(path: String): ParserDict[CcgCat] = fromSpaceSeparatedLexicon(path, 0, 3)
+
+  private def fromSpaceSeparatedLexicon(path: String, termIdx: Int, categoryProbIdx: Int): ParserDict[CcgCat] = {
     val lexiconMap: mutable.Map[String, mutable.ListBuffer[CcgCat]] = mutable.Map()
 
     val file = Source.fromFile(path)
     for (line <- file.getLines()) {
-      val parts = line.split(" +")
-      val term = parts(0)
+      val parts = line.split("[\t ]+")
+      val term = parts(termIdx)
       val parsedCategory: CategoryParser.ParseResult[CcgCat] = CategoryParser(parts(1))
-      val prob = parts(4).toDouble
+      val categoryProbability = parts(categoryProbIdx).toDouble
       if (parsedCategory.successful) {
-        val cat: CcgCat = parsedCategory.get % prob
+        val cat: CcgCat = parsedCategory.get % categoryProbability
         if (lexiconMap contains term) {
           lexiconMap(term).append(cat)
         } else {
@@ -89,7 +97,6 @@ object ParserDict {
         }
       }
     }
-
     ParserDict[CcgCat](syntaxToSemantics(lexiconMap.toMap.mapValues(s => s.toSeq)))
   }
 
