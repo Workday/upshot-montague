@@ -6,6 +6,11 @@ montague
 You can build on this code to translate English-into-SQL,
 English-into-API commands, etc.
 
+It takes its name from [Montague
+Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
+idea that human language can be expressed through formal logic and
+lambda-calculus.
+
 Authors
 -------
 
@@ -71,6 +76,9 @@ Library overview
 [here's how you build something new]
 
 [here's some cool Scala stuff that's excellent for CCG]
+
+Related academic work
+---------------------
 
 TODO
 ----
