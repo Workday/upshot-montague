@@ -6,6 +6,10 @@ montague
 You can build on this code to translate English-into-SQL,
 English-into-API commands, etc.
 
+The code currently implements boolean (non-probabilistic) CCG
+parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
+parse search strategy.
+
 [need some nice graphic here]
 
 Authors
@@ -34,9 +38,10 @@ semantic parsing.
 History
 -------
 
-At UPSHOT (acquired by Workday), we built a semantic parser that
-translated English into SQL, and—later—English into SOQL (the
-Salesforce query language).
+At [UPSHOT](http://blogs.workday.com/workday-acquires-upshot/)
+(acquired by Workday), we built a semantic parser that translated
+English into SQL, and—later—English into SOQL (the Salesforce query
+language).
 
 This package improves upon and open-sources the CCG-based semantic
 parser component of UPSHOT. We hope that that other people find it
