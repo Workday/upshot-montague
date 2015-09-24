@@ -9,7 +9,7 @@ package object example {
     (Seq("+", "plus") -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
     (Seq("-", "minus") -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
     (Seq("*", "times") -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
-    (Seq("+/-", "plus/minus") -> Seq( // example of ambiguous definition
+    ("+/-" -> Seq( // example of ambiguous definition
       ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
       ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})
     )) +

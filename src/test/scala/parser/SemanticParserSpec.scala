@@ -74,7 +74,7 @@ class SemanticParserSpec extends FlatSpec {
 
     val parser = new SemanticParser[CcgCat](mathLexicon)
 
-    val result = parser.parse("What is (2 plus 3) times (8 plus/minus 4)?", parenTokenizer)
+    val result = parser.parse("What is (2 plus 3) times (8 +/- 4)?", parenTokenizer)
 
     // 2+3 * (8±4) = 60 or 20
     assert(result.semantics == Ambiguous(Set(Form(60), Form(20))))
