@@ -14,12 +14,15 @@ object CcgBankParser extends SemanticParser[CcgCat](CcgBankLexicon.lexicon) {
     }
 
     println(s"Input: $input")
-    println(s"Parse: $output")
-    println(s"Chart: ${result.bestParse.map(_.toStringHelp(withSemantics = false))}")
+    println(s"Highest-scoring parse: $output")
+
+    if (result.bestParse.isDefined) {
+      println(result.bestParse.map(_.toStringHelp(withSemantics = false)))
+    }
   }
 }
 
 object CcgBankLexicon {
   val lexicon = ParserDict.fromOldCcgBankLexicon("data/lexicon.wsj02-21") +
-    (Else -> Seq(NP % 0.45, N % 0.45, X % 0.1))  // unrecognized terms are probably nouns, but could be anything
+    (Else -> Seq(N % 0.9, X % 0.1))  // unrecognized terms are probably nouns, but could be anything
 }

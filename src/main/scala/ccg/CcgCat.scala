@@ -7,8 +7,8 @@ sealed trait CcgCat extends SyntacticLabel[CcgCat] {
   override val score = prob
 
   def matches(filter: CcgCat): Boolean = filter.label match {
-    case Some(_) => category == filter.category && label == filter.label
-    case None => category == filter.category
+    case Some(_) => Category.matches(category, filter.category) && label == filter.label
+    case None => Category.matches(category, filter.category)
   }
 
   def getForwardApplication(right: CcgCat): Option[CcgCat]
