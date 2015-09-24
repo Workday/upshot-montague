@@ -24,13 +24,12 @@ Background
 `montague` takes its name from [Montague
 Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
 idea that human language can be expressed through formal logic and
-lambda-calculus.  Specifically, `montague` implements [Combinatory
-Categorial Grammar
+lambda-calculus. The process of inferring this formal representation
+from natural language is called "semantic parsing". Specifically,
+`montague` implements [Combinatory Categorial Grammar
 (CCG)](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar), a
 particular grammar formalism that has become popular recently for
 semantic parsing.
-
-[Semantic parsing]
 
 History
 -------
@@ -60,8 +59,10 @@ Input: (3 + 5) * 2
 Output: Form(16)
 ```
 
-Because CCG doesn't have a built-in notion of precedence, all binary operations have equal precedence, and thus
-syntactic ambiguity can result:
+Our current implementation treats all grammatical rule applications
+as either possible (true) or impossible (false).  For this reason,
+the parser cannot currently discriminate between rules of different
+precedence:
 
 ```sh
 > sbt "runMain example.ArithmeticParser 3 + 5 * 2"
@@ -69,7 +70,11 @@ Input: 3 + 5 * 2
 Output: Ambiguous(Set(Form(13), Form(16)))
 ```
 
-You can also add ambiguity through the use of terms with multiple semantic definitions, such as `+/-`:
+Besides ambiguity arising from the inability to discriminate between
+different rule applications, we might want intentionally to encode
+ambiguity into our language. For example, the `+/-` operation is
+intentionally ambiguous, and has multiple valid semantic
+interpretations:
 
 ```sh
 > sbt "runMain example.ArithmeticParser (3 +/- 5) * 2"
@@ -77,7 +82,9 @@ Input: (3 +/- 5) * 2
 Output: Ambiguous(Set(Form(16), Form(-4)))
 ```
 
-The `Else` clause in the lexicon definition allows this parser to ignore all unrecognized tokens:
+We ignore all unrecognized tokens by adding an `Else` clause in the
+lexicon, which [...]:
+
 ```
 > sbt "runMain example.ArithmeticParser Could you please tell me, what is 100 + 100 ?"
 Input: Could you please tell me, what is 100 + 100 ?
@@ -92,20 +99,35 @@ Using the CCGBank lexicon, we parse English sentences into
 sbt runMain [blah blah blah]
 ```
 
-If you have the CCGBank lexicon and would like to use it, [blah blah blah]
+If you have the CCGBank lexicon and would like to use it, [blah
+blah blah]
 
 If you don't have CCGBank lexicon, you can download an older version
 of it from [Julia
 Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
 
 ```sh
-pushd data/ && wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && gunzip lexicon.wsj02-21.gz && popd
+pushd data/ && \
+wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && \
+gunzip lexicon.wsj02-21.gz && \
+popd
 ```
 
-Functionality
--------------
+Functionality and limitations
+-----------------------------
 
-[Non-probabilistic]
+The code currently supports boolean parsing: A parse of the input
+string is either possible (true) or impossible (false).
+
+This corresponds to implementing the boolean semiring parser of
+[Goodman, 1999](http://www.aclweb.org/anthology/J99-4004) (see
+Figure 5).
+
+A possible future project is to extend the code so that it supports
+probabilistic or weighted parsing. (The existing probabilistic
+implementation of English parsing, based upon multiplying out lexicon
+weights, is hacked by including the token weights within the CCG
+category.)
 
 Possible future projects
 ------------------------
@@ -127,8 +149,11 @@ Library overview
 
 [here's some cool Scala stuff that's excellent for CCG]
 
-Related academic work
----------------------
+Related work
+------------
+
+* [SEMPRE](http://www-nlp.stanford.edu/software/sempre/) is a toolkit
+for training semantic parsers.
 
 TODO
 ----
