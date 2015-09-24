@@ -33,7 +33,7 @@ class SemanticParserSpec extends FlatSpec {
 
   it should "perform a syntactic parse with a lexicon loaded from CCGbank" in {
     // Load a (very) abridged CCGbank lexicon, with just the words we need to parse our example sentence
-    val ccgBankLexicon = ParserDict.fromCcgBankLexicon("src/test/resources/CCGbank.00-24.lexicon.partial")
+    val ccgBankLexicon = ParserDict.fromCcgBankLexicon("data/CCGbank.00-24.lexicon.partial")
     val parser = new SemanticParser[CcgCat](ccgBankLexicon)
 
     val result = parser.parse("the quick brown ox and the silly cat jump over the lazy dog")
