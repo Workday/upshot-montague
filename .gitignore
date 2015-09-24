@@ -1,3 +1,4 @@
+*.sw?
 .idea
 .idea_modules
 project
