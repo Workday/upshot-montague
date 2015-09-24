@@ -6,6 +6,8 @@ montague
 You can build on this code to translate English-into-SQL,
 English-into-API commands, etc.
 
+[need some nice graphic here]
+
 Authors
 -------
 
@@ -45,8 +47,7 @@ and release that too.
 Getting Started
 ---------------
 
-English-to-calculator arithmetic
-================================
+### English-to-calculator arithmetic
 
 In this example, English is parsed into a semantic form, which is
 then realized as arithmetic operations.
@@ -55,8 +56,7 @@ then realized as arithmetic operations.
 sbt runMain [blah blah blah]
 ```
 
-English-to-semantic structure
-================================
+### English-to-semantic structure
 
 Using the CCGBank lexicon, we parse English sentences into 
 
@@ -72,8 +72,7 @@ Functionality
 Possible future projects
 ------------------------
 
-Technical improvements
-======================
+### Technical improvements
 
 * Probabilistic parser with rules. [...]
 * Faster parsing:
