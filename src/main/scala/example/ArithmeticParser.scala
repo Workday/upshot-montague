@@ -15,8 +15,10 @@ object ArithmeticParser extends SemanticParser[CcgCat](ArithmeticLexicon.lexicon
     println(s"Input: $input")
     println(s"Output: $output")
 
-    // Print out the best parse in Graphviz Dot format
-    // println(result.bestParse.get.toDotString)
+    if (result.bestParse.isDefined) {
+      // Print out the best parse in Graphviz Dot format
+      // println(result.bestParse.get.toDotString)
+    }
   }
 
   // We need a custom tokenizer to separate parentheses from adjoining terms

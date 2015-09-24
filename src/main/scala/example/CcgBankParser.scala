@@ -1,7 +1,7 @@
 package example
 
-import ccg.{NP, N, X, CcgCat}
-import parser.{Else, SemanticParser, ParserDict}
+import ccg.{CcgCat, N, X}
+import parser.{Else, ParserDict, SemanticParser}
 import semantics.Ignored
 
 object CcgBankParser extends SemanticParser[CcgCat](CcgBankLexicon.lexicon) {
@@ -17,7 +17,8 @@ object CcgBankParser extends SemanticParser[CcgCat](CcgBankLexicon.lexicon) {
     println(s"Highest-scoring parse: $output")
 
     if (result.bestParse.isDefined) {
-      println(result.bestParse.map(_.toStringHelp(withSemantics = false)))
+      // Print out the best parse in Graphviz Dot format
+      // println(result.bestParse.get.toDotString)
     }
   }
 }
