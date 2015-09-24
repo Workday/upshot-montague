@@ -60,8 +60,9 @@ Input: (3 + 5) * 2
 Output: Form(16)
 ```
 
-Because CCG doesn't have a built-in notion of precedence, all binary operations have equal precedence, and thus
-syntactic ambiguity can result:
+Because CCG doesn't have a built-in notion of precedence, all binary
+operations have equal precedence, and thus syntactic ambiguity can
+result:
 
 ```sh
 > sbt "runMain example.ArithmeticParser 3 + 5 * 2"
@@ -69,7 +70,8 @@ Input: 3 + 5 * 2
 Output: Ambiguous(Set(Form(13), Form(16)))
 ```
 
-You can also add ambiguity through the use of terms with multiple semantic definitions, such as `+/-`:
+You can also add ambiguity through the use of terms with multiple
+semantic definitions, such as `+/-`:
 
 ```sh
 > sbt "runMain example.ArithmeticParser (3 +/- 5) * 2"
@@ -77,7 +79,9 @@ Input: (3 +/- 5) * 2
 Output: Ambiguous(Set(Form(16), Form(-4)))
 ```
 
-The `Else` clause in the lexicon definition allows this parser to ignore all unrecognized tokens:
+The `Else` clause in the lexicon definition allows this parser to
+ignore all unrecognized tokens:
+
 ```
 > sbt "runMain example.ArithmeticParser Could you please tell me, what is 100 + 100 ?"
 Input: Could you please tell me, what is 100 + 100 ?
@@ -92,14 +96,18 @@ Using the CCGBank lexicon, we parse English sentences into
 sbt runMain [blah blah blah]
 ```
 
-If you have the CCGBank lexicon and would like to use it, [blah blah blah]
+If you have the CCGBank lexicon and would like to use it, [blah
+blah blah]
 
 If you don't have CCGBank lexicon, you can download an older version
 of it from [Julia
 Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
 
 ```sh
-pushd data/ && wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && gunzip lexicon.wsj02-21.gz && popd
+pushd data/ && \
+wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && \
+gunzip lexicon.wsj02-21.gz && \
+popd
 ```
 
 Functionality
@@ -127,8 +135,11 @@ Library overview
 
 [here's some cool Scala stuff that's excellent for CCG]
 
-Related academic work
----------------------
+Related work
+------------
+
+* [SEMPRE](http://www-nlp.stanford.edu/software/sempre/) is a toolkit
+for training semantic parsers.
 
 TODO
 ----
