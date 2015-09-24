@@ -16,5 +16,6 @@ package object example {
     ("(" -> (Paren/N, identity)) +
     (")" -> (N\Paren, identity)) +
     (IntegerMatcher -> (N, {i: Int => Form(i)})) +  // IntegerMatcher matches using Integer.parseInt
-    (Else -> (X|X, {s: String => identity}))  // X|X is the identity CCG category
+    (Else -> (X|X, {s: String => identity}))  // Else matches any single tokens that don't match anything else;
+                                              // X|X is the identity CCG category
 }
