@@ -1,6 +1,7 @@
 package parser
 
 import ccg._
+import example.ArithmeticParser
 import org.scalatest.FlatSpec
 import semantics._
 
@@ -51,30 +52,8 @@ class SemanticParserSpec extends FlatSpec {
     assert(worstParse.semantic != Ignored("jump(over(the(lazy(dog))))(and(the(silly(cat)))(the(quick(brown(ox)))))"))
   }
 
-  it should "perform a semantic parse with a simple mathematical dictionary" in {
-    case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
-
-    val mathLexicon = ParserDict[CcgCat]() +
-      ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}})) +
-      ("minus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})) +
-      ("times" -> ((N\N)/N, λ {y: Int => λ {x: Int => x * y}})) +
-      ("plus/minus" -> Seq( // example of ambiguous definition
-        ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}),
-        ((N\N)/N, λ {y: Int => λ {x: Int => x - y}})
-      )) +
-      ("(" -> (Paren/N, identity)) +
-      (")" -> (N\Paren, identity)) +
-      (Seq("what is", "?") -> (X|X, identity)) + // X|X is the identity CCG category
-      (IntegerMatcher -> (N, {i: Int => Form(i)}))  // IntegerMatcher matches using Integer.parseInt
-
-    // We need a custom tokenizer to separate parentheses from adjoining terms
-    def parenTokenizer(str: String) = {
-      str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
-    }
-
-    val parser = new SemanticParser[CcgCat](mathLexicon)
-
-    val result = parser.parse("What is (2 plus 3) times (8 +/- 4)?", parenTokenizer)
+  it should "perform a semantic parse with a simple arithmetic lexicon" in {
+    val result = ArithmeticParser.parse("What is (2 + 3) * (8 +/- 4)?")
 
     // 2+3 * (8±4) = 60 or 20
     assert(result.semantics == Ambiguous(Set(Form(60), Form(20))))
