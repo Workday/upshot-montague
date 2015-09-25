@@ -197,9 +197,40 @@ alex's(bandmates)
 Library overview
 ----------------
 
-[here's how you build something new]
+### `SemanticParser`
 
-[here's some cool Scala stuff that's excellent for CCG]
+`SemanticParser` is the main entry point into _montague_. To instantiate a `SemanticParser`, you need a syntactic scheme (`CcgCat` for our purposes) and a lexicon, stored in a `ParserDict`.
+
+Once you've instantiated a `SemanticParser`, `.parse(text, tokenizer)` yields a `SemanticParseResult`, which you can unpack to find the parse tree and resulting semantic representation (if the parse succeeded). See `SemanticParser.main` for an example of how to extract results.
+
+##### Lexicons
+
+To build up a lexicon, you can create a new `ParserDict()` (or load syntactic entries from a CCGbank lexicon, if you have one, with `ParserDict.fromCcgBankLexicon`) and add entries to it with the `+` operator.
+
+A lexicon entry looks like `(matcher -> meaning)`, where
+- `matcher` can be (1) a term (String), (2) a Seq of terms, (3) an instance of `TokenMatcher`, or (4) `Else`, which matches any otherwise un-matched token; and
+- `meaning` can be (1) a syntactic category, (2) a (syntactic category, semantic representation) pair, (3) a Seq of either of the above _(in which case the meaning of the term is ambiguous)_
+
+##### `SemanticRepl`
+
+`SemanticRepl` is a wrapper on top of `SemanticParser` that's useful for making REPLs that repeatedly read input, parse it into an "action", and pattern-match that action to perform some operation against an internal state. For an example of `SemanticRepl` at work, see the [`InformationStore`](https://ghe.megaleo.com/upshot/montague#english-to-information-storage-and-retrieval) example above.
+
+### Syntactic Categories
+
+_montague_ supports arbitrary syntactic schemes, but the only one built-in is `CcgCat`, representing CCG categories. Here are the categories available in the `ccg` package:
+
+- _Terminal_ syntactic categories are ones that can appear at the top of the parse tree and cannot consume adjacent terms. Built-in terminals are `S` ("sentence"), `N` ("noun"), `NP` ("noun phrase"), and `PP` ("prepositional phrase"), but others are easy to add, depending on your application.
+- _Non-terminal_ syntactic categories are ones that can (and must) consume adjacent terms. A parse cannot succeed if there is a non-terminal at the top of the parse tree. Types of non-terminal categories are:
+   - _Forward application_: `A/B` consumes a `B` in front of it to become an `A`.
+   - _Backward application_: `A\B` consumes a `B` behind it to become an `A`.
+   - _Bidirectional application_: `A|B` consumes an adjacent `Y` to become an `A`.
+   - _Identity categories_: `X|X`, `X/X`, and `X\X` are special cases of the above -- they can consume a term of _any category_ to become that category.
+   - `Conj`, the _conjunction_ category, is a short-hand for `(X\X)/X`.
+     _(Exercise: Why is this called the "conjunction" category?)_
+- Additionally, a category assigned to a term may have a probability attached to it: `Cat % prob`. For example, if the term _apple_ has categories `N % 0.9` and `(NP/N) % 0.1`, that means that it's 9 times more likely to be a noun than an adjective, and the parser will score potential parses accordingly. Probabilities default to `1.0` if unspecified.
+- A category may also have a label: `Cat("label")`. `A/B("somelabel")` can consume a `B("somelabel")` but not a regular `B`.
+
+### Semantic Representations
 
 Exercises for the reader
 ------------------------

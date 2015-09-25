@@ -21,15 +21,14 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     println(s"Input: $input")
     println(s"Output: $output")
 
-    println(result.bestParse)
+    // Print out the full syntactic parse tree of the best parse
+    // println(result.bestParse)
 
-    if (result.bestParse.isDefined) {
-      // Print out the best parse in Graphviz Dot format
-      // println(result.bestParse.get.toDotString)
+    // Print out the best parse in Graphviz Dot format
+    // println(result.bestParse.get.toDotString)
 
-      // Print out the best parse in ASCII format
-      // println(result.bestParse.get.toString)
-    }
+    // Print out the best parse in ASCII format
+    // println(result.bestParse.get.toString)
   }
 
   def parse(str: String, tokenizer: String => IndexedSeq[String] = defaultTokenizer): SemanticParseResult[S] = {
