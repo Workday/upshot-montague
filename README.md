@@ -15,9 +15,9 @@ parse search strategy.
 Authors
 -------
 
-* Thomas Kim
+* [Thomas Kim](https://twitter.com/tksfz)
 * Joseph Turian
-* Aleksandr Nisnevich
+* [Aleksandr Nisnevich](http://alex.nisnevich.com)
 
 Background
 ----------
@@ -53,7 +53,7 @@ Getting Started
 
 ### English-to-calculator arithmetic
 
-See [`example.ArithmeticParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/ArithmeticParser.scala).
+(See [`ArithmeticParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/ArithmeticParser.scala).)
 
 In this example, English is parsed into a semantic form, which is
 then realized as arithmetic operations.
