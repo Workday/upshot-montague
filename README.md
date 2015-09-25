@@ -10,7 +10,7 @@ The code currently implements boolean (non-probabilistic) CCG
 parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
 parse search strategy.
 
-[need some nice graphic here]
+![An example parse tree](example.svg)
 
 Authors
 -------

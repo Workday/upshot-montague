@@ -26,7 +26,9 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
 
     if (result.bestParse.isDefined) {
       // Print out the best parse in Graphviz Dot format
-      println(result.bestParse.get.toDotString)
+      // println(result.bestParse.get.toDotString)
+      // Print out the best parse in ASCII format
+      // println(result.bestParse.get.toString)
     }
   }
 
