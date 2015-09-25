@@ -286,7 +286,7 @@ nodes are kept in any parse cell.
 
 1. Add more features to the `ArithmeticParser` example. For example, improve the tokenizer to correctly handle infix expressions without spaces (e.g. `(1+2)*3`), or add more operations.
 1. Add more features to the `InformationStore` example. For example, add other types of relations, or support more kinds of expressions.
-1. **IFTTT.** Parse English phrases like _"When <this happens>, <do this>"_ into semantic forms corresponding to [IFTTT](https://ifttt.com/) API calls. Try building a REPL on top of `SemanticRepl` for communicating with IFTTT via natural language.
+1. **IFTTT.** Parse English phrases like _"When (this happens), (do this)"_ into semantic forms corresponding to [IFTTT](https://ifttt.com/) API calls. Try building a REPL on top of `SemanticRepl` for communicating with IFTTT via natural language.
 1. **Slack bot.** Similar to the above, but do something cool with a [Slack bot](https://api.slack.com/bot-users) instead.
 1. **† Game semantics.** Come up with a semantic scheme for representing rule descriptions for a simple card game (think _Magic_, _Hearthstone_, etc., but simplify!) For example, a card may say something like _"Whenever your opponent loses life, draw a card"_. Then write a parser for it.
 1. **† English to Freebase.** Parse English phrases into [Freebase](https://www.freebase.com/) queries. For example (borrowing an example from [SEMPRE](http://www-nlp.stanford.edu/software/sempre/)), _"Which college did Obama go to?"_ → `(and (Type University) (Education BarackObama))` → _"Occidental College, Columbia University"_. (_Hint_: You'll have to generate most of the lexicon programmatically using Freebase as well.)
