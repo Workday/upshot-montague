@@ -58,7 +58,7 @@ Here's what it means:
 Looking through the code of the examples below, you'll notice that not all
 definitions look quite like this. Some
 of them have multiple synonyms for one definition, or multiple definitions
-for a single term (in that case, we say that the term has _semantic ambiguity_).
+for a single term (in that case, we say that the term is _ambiguous_).
 Some of them don't operate on single terms at all, but on _matchers_ (functions that try
 to find certain kinds of strings). Some of them don't have semantic definitions
 at all and only describe syntactic categories. But the general idea for all of these
