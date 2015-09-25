@@ -11,6 +11,25 @@ class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
                                              override protected val timeLimitSecs: Double = 10.0) extends CkyParserWithList[SemanticParseNode[S]] {
   protected type Node = SemanticParseNode[S]
 
+  def main(args: Array[String]): Unit = {
+    val input = args.mkString(" ")
+    val result = parse(input)
+    val bestParse = result.bestParse.map(_.semantic) match {
+      case Some(Ignored(parse)) => parse
+      case _ => "(failed to parse)"
+    }
+    val semantics = result.semantics
+
+    println(s"Input: $input")
+    println(s"Best parse: $bestParse")
+    println(s"Semantic output: $semantics")
+
+    if (result.bestParse.isDefined) {
+      // Print out the best parse in Graphviz Dot format
+      println(result.bestParse.get.toDotString)
+    }
+  }
+
   def parse(str: String, tokenizer: String => IndexedSeq[String] = defaultTokenizer): SemanticParseResult[S] = {
     parse(tokenizer(str))
   }

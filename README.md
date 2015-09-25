@@ -100,8 +100,21 @@ Output: Form(200)
 
 Using the CCGBank lexicon, we parse English sentences into
 
+If you don't have the CCGBank lexicon, you can download an older version
+of it from [Julia
+Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
+
 ```sh
-> sbt "runMain example.CcgBankParser Alex and Joseph are writing a parser"
+pushd data/ && \
+wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && \
+gunzip lexicon.wsj02-21.gz && \
+popd
+```
+
+You can then parse sentences using the old CCGBank lexicon as follows:
+
+```sh
+> sbt "runMain example.OldCcgBankParser Alex and Joseph are writing a parser"
 Input: Alex and Joseph are writing a parser
 Highest-scoring parse: are(writing(a(parser)))(and(joseph)(alex))
 Some(([0,7], 'S [prob = 0.116236165]', ([3,7], '(S[dcl]\NP) [prob = 0.1440928]', ('((S[dcl]\NP)/(S[ng]\NP)) [prob = 0.276222]', 'are'),
@@ -113,18 +126,12 @@ Some(([0,7], 'S [prob = 0.116236165]', ([3,7], '(S[dcl]\NP) [prob = 0.1440928]',
 ('N [prob = 0.9]', 'alex'))))
 ```
 
-If you have the CCGBank lexicon and would like to use it, [blah
-blah blah]
-
-If you don't have CCGBank lexicon, you can download an older version
-of it from [Julia
-Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
+If you do have the CCGBank lexicon and would like to use it, put
+`CCGbank.00-24.lexicon` into subdirectory `data/`, and invoke the
+parser as follows:
 
 ```sh
-pushd data/ && \
-wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && \
-gunzip lexicon.wsj02-21.gz && \
-popd
+> sbt "runMain example.CcgBankParser 'Alex and Joseph are writing a parser'"
 ```
 
 Functionality and limitations
