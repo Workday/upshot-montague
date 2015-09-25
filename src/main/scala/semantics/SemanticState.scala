@@ -1,6 +1,7 @@
 package semantics
 
 import SemanticImplicits._
+import util.StringUtil
 
 /**
  * This is either a lambda, or a completed state.
@@ -39,9 +40,9 @@ case class Ambiguous(options: Set[SemanticState]) extends SemanticState {
   override def toString: String = s"Ambiguous(${options.mkString(", ")})"
 }
 
-/// Ignores semantics and stores the dependency tree (for purely syntactic parses)
+/// Ignores semantics and simply stores the dependency tree (for purely syntactic parses)
 case class Ignored(tree: String) extends SemanticState {
-  override def toString: String = tree
+  override def toString: String = StringUtil.toPrettyTree(tree)
 }
 
 object λ {

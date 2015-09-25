@@ -101,8 +101,7 @@ Output: 200
 Using the CCGBank lexicon, we parse English sentences into
 
 If you don't have the CCGBank lexicon, you can download an older version
-of it from [Julia
-Hockenmaier](http://juliahmr.cs.illinois.edu/CCGlexicon/):
+of it from [Julia Hockenmaier's site](http://juliahmr.cs.illinois.edu/CCGlexicon/):
 
 ```sh
 pushd data/ && \
@@ -114,16 +113,18 @@ popd
 You can then parse sentences using the old CCGBank lexicon as follows:
 
 ```sh
-> sbt "runMain example.OldCcgBankParser Alex and Joseph are writing a parser"
-Input: Alex and Joseph are writing a parser
-Highest-scoring parse: are(writing(a(parser)))(and(joseph)(alex))
-Some(([0,7], 'S [prob = 0.116236165]', ([3,7], '(S[dcl]\NP) [prob = 0.1440928]', ('((S[dcl]\NP)/(S[ng]\NP)) [prob = 0.276222]', 'are'),
-([4,7], '(S[ng]\NP) [prob = 0.52165574]', ('((S[ng]\NP)/NP) [prob = 0.636364]', 'writing'),
-([5,7], 'NP [prob = 0.8197443]', ('(NP[nb]/N) [prob = 0.910827]', 'a'),
-('N [prob = 0.9]', 'parser')))),
-([0,3], 'N [prob = 0.80667573]', ([1,3], '(N\N) [prob = 0.8963064]', ('((X\X)/X) [prob = 0.995896]', 'and'),
-('N [prob = 0.9]', 'joseph')),
-('N [prob = 0.9]', 'alex'))))
+> sbt "runMain example.OldCcgBankParser Thom and Alex and Joseph are writing a parser"
+Input: Thom and Alex and Joseph are writing a parser
+Output:
+  are
+    writing
+      a
+        parser
+    and
+      joseph
+      and
+        alex
+        thom
 ```
 
 If you do have the CCGBank lexicon and would like to use it, put

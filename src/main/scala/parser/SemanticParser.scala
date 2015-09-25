@@ -8,25 +8,23 @@ import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
 
 class SemanticParser[S <: SyntacticLabel[S]](dict: ParserDict[S],
-                                             override protected val timeLimitSecs: Double = 10.0) extends CkyParserWithList[SemanticParseNode[S]] {
+                                             override protected val timeLimitSecs: Double = 10.0)
+extends CkyParserWithList[SemanticParseNode[S]] {
+
   protected type Node = SemanticParseNode[S]
 
   def main(args: Array[String]): Unit = {
     val input = args.mkString(" ")
     val result = parse(input)
-    val bestParse = result.bestParse.map(_.semantic) match {
-      case Some(Ignored(parse)) => parse
-      case _ => "(failed to parse)"
-    }
-    val semantics = result.semantics
+    val output = result.bestParse.map(_.semantic.toString).getOrElse("(failed to parse)")
 
     println(s"Input: $input")
-    println(s"Best parse: $bestParse")
-    println(s"Semantic output: $semantics")
+    println(s"Output: $output")
 
     if (result.bestParse.isDefined) {
       // Print out the best parse in Graphviz Dot format
       // println(result.bestParse.get.toDotString)
+
       // Print out the best parse in ASCII format
       // println(result.bestParse.get.toString)
     }
