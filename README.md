@@ -16,7 +16,7 @@ Authors
 -------
 
 * [Thomas Kim](https://twitter.com/tksfz)
-* Joseph Turian
+* [Joseph Turian](http://joseph.turian.com)
 * [Aleksandr Nisnevich](http://alex.nisnevich.com)
 
 Background
