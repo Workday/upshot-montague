@@ -1,8 +1,10 @@
 package example
 
-import ccg.{X, N, CcgCat}
+import ccg.{TerminalCat, X, N, CcgCat}
 import parser._
 import semantics._
+
+case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
 
 object ArithmeticParser extends SemanticParser[CcgCat](ArithmeticLexicon.lexicon) {
   def parse(str: String): SemanticParseResult[CcgCat] = parse(str, tokenizer = parenTokenizer)

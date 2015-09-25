@@ -21,6 +21,8 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     println(s"Input: $input")
     println(s"Output: $output")
 
+    println(result.bestParse)
+
     if (result.bestParse.isDefined) {
       // Print out the best parse in Graphviz Dot format
       // println(result.bestParse.get.toDotString)
@@ -40,7 +42,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
   }
 
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
-    str.trim.toLowerCase.split("\\s+")
+    str.trim.toLowerCase.split("\\s+|[.?!]")
   }
 
   override protected def dictLookup(parseToken: ParseToken, spans: Spans): List[Node] = {

@@ -98,7 +98,9 @@ Output: 200
 
 ### English-to-semantic structure
 
-Using the CCGBank lexicon, we parse English sentences into
+(See [`CcgBankParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/CcgParser.scala).)
+
+Using the CCGBank lexicon, we parse English sentences into syntax dependency trees.
 
 If you don't have the CCGBank lexicon, you can download an older version
 of it from [Julia Hockenmaier's site](http://juliahmr.cs.illinois.edu/CCGlexicon/):
@@ -132,7 +134,29 @@ If you do have the CCGBank lexicon and would like to use it, put
 parser as follows:
 
 ```sh
-> sbt "runMain example.CcgBankParser 'Alex and Joseph are writing a parser'"
+> sbt "runMain example.CcgBankParser Thom and Alex and Joseph are writing a parser"
+```
+
+### English information storage and retrieval
+
+(See [`InformationStore`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/InformationStore.scala).)
+
+This example uses the older-style CCGBank lexicon - see [the above example](#english-to-semantic-structure) for download instructions.
+
+```sh
+> sbt "runMain example.InformationStore"
+>> Joseph is a programmer
+Ok
+>> Joseph is pretty weird
+Ok
+>> Who is Joseph?
+{a(programmer), pretty(weird)}
+>> Who are Joseph and Ted?
+I don't know
+>> Joseph and Ted are Alex's bandmates
+Ok
+>> Who are Joseph and Ted?
+alex's(bandmates)
 ```
 
 Functionality and limitations
