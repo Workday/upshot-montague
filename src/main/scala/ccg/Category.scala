@@ -1,7 +1,7 @@
 package ccg
 
 /**
- * Created by aleksandr.nisnevich on 9/24/15.
+ * Helper functions relating to CCG categories.
  */
 object Category {
   def matches(category: String, targetCategory: String): Boolean = {
