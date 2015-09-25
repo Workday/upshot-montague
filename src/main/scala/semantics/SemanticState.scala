@@ -27,16 +27,22 @@ trait SemanticState {
 case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState
 
 /// Form (β-normal form) means the semantic state is not consuming arguments.
-case class Form[LF](value: LF) extends SemanticState
+case class Form[LF](value: LF) extends SemanticState {
+  override def toString: String = value.toString
+}
 
 /// Represents a parse with no valid semantic outputs
 case object Nonsense extends SemanticState
 
 /// Represents a parse with more than one valid semantic output
-case class Ambiguous(options: Set[SemanticState]) extends SemanticState
+case class Ambiguous(options: Set[SemanticState]) extends SemanticState {
+  override def toString: String = s"Ambiguous(${options.mkString(", ")})"
+}
 
 /// Ignores semantics and stores the dependency tree (for purely syntactic parses)
-case class Ignored(tree: String) extends SemanticState
+case class Ignored(tree: String) extends SemanticState {
+  override def toString: String = tree
+}
 
 object λ {
   def apply[LF](func: LF => _): SemanticState = {

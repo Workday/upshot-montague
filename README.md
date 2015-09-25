@@ -61,7 +61,7 @@ then realized as arithmetic operations.
 ```sh
 > sbt "runMain example.ArithmeticParser (3 + 5) * 2"
 Input: (3 + 5) * 2
-Output: Form(16)
+Output: 16
 ```
 
 Our current implementation treats all grammatical rule applications
@@ -72,7 +72,7 @@ precedence:
 ```sh
 > sbt "runMain example.ArithmeticParser 3 + 5 * 2"
 Input: 3 + 5 * 2
-Output: Ambiguous(Set(Form(13), Form(16)))
+Output: Ambiguous(13, 16)
 ```
 
 Besides ambiguity arising from the inability to discriminate between
@@ -84,7 +84,7 @@ interpretations:
 ```sh
 > sbt "runMain example.ArithmeticParser (3 +/- 5) * 2"
 Input: (3 +/- 5) * 2
-Output: Ambiguous(Set(Form(16), Form(-4)))
+Output: Ambiguous(16, -4)
 ```
 
 We ignore all unrecognized tokens by adding an `Else` clause in the
@@ -93,7 +93,7 @@ lexicon, which [...]:
 ```
 > sbt "runMain example.ArithmeticParser Could you please tell me, what is 100 + 100 ?"
 Input: Could you please tell me, what is 100 + 100 ?
-Output: Form(200)
+Output: 200
 ```
 
 ### English-to-semantic structure
