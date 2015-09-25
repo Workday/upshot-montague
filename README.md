@@ -26,7 +26,7 @@ Background
 > — Larry Wall in `<199709032332.QAA21669@wall.org>`
 
 `montague` takes its name from [Montague
-emantics](https://en.wikipedia.org/wiki/Montague_grammar), the
+semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
 idea that human language can be expressed through formal logic and
 lambda-calculus. The process of inferring this formal representation
 from natural language is called "semantic parsing". Specifically,
@@ -34,6 +34,8 @@ from natural language is called "semantic parsing". Specifically,
 (CCG)](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar), a
 particular grammar formalism that has become popular recently for
 semantic parsing.
+
+### Lambda-calculus? Combinatory grammar? Huh??
 
 Here's an example of a definition in `montague`:
 ```
