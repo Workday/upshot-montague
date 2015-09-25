@@ -9,14 +9,14 @@ abstract class SemanticRepl[S <: SyntacticLabel[S], A, M](parser: SemanticParser
   def main(args: Array[String]): Unit = {
     var model: M = initialModel
 
-    print("> ")
+    print(">> ")
     for (line <- stdin.getLines()) {
       val bestParseOpt = parser.parse(line).bestParse
       bestParseOpt.map(_.semantic) match {
         case Some(Form(action: A)) => model = performAction(model, action)
         case _ => onParseError(line)
       }
-      print("> ")
+      print(">> ")
     }
   }
 
