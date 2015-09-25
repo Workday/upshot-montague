@@ -15,7 +15,7 @@ parse search strategy.
 Authors
 -------
 
-* Thomas Am Kim
+* Thomas Kim
 * Joseph Turian
 * Aleksandr Nisnevich
 
