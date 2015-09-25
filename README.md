@@ -208,8 +208,16 @@ Once you've instantiated a `SemanticParser`, `.parse(text, tokenizer)` yields a 
 To build up a lexicon, you can create a new `ParserDict()` (or load syntactic entries from a CCGbank lexicon, if you have one, with `ParserDict.fromCcgBankLexicon`) and add entries to it with the `+` operator.
 
 A lexicon entry looks like `(matcher -> meaning)`, where
-- `matcher` can be (1) a term (String), (2) a Seq of terms, (3) an instance of `TokenMatcher`, or (4) `Else`, which matches any otherwise un-matched token; and
-- `meaning` can be (1) a syntactic category, (2) a (syntactic category, semantic representation) pair, (3) a Seq of either of the above _(in which case the meaning of the term is ambiguous)_
+- `matcher` can be
+    1. a term (String),
+    2. a Seq of terms,
+    3. an instance of `TokenMatcher[T]` (a `String => Seq[T]` function), or
+    4. `Else`, which matches any otherwise un-matched token; and
+- `meaning` can be
+    1. a syntactic category,
+    2. a `(`syntactic category`,` semantic representation`)` pair,
+    3. a Seq of either of the above _(in which case the meaning of the term is ambiguous)_, or
+    4. _(only if the `matcher` is a `TokenMatcher` or `Else`)_, a function of the matched object that produces of Seq of syntactic categories or a `(`syntactic category`,` semantic representation`)` pairs
 
 ##### `SemanticRepl`
 
