@@ -21,6 +21,8 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     println(s"Input: $input")
     println(s"Output: $output")
 
+    println(result.bestParse)
+
     if (result.bestParse.isDefined) {
       // Print out the best parse in Graphviz Dot format
       // println(result.bestParse.get.toDotString)

@@ -16,10 +16,17 @@ import util.StringUtil
 trait SemanticState {
   def apply(arg: SemanticState): SemanticState = {
     this match {
-      case Lambda(k) => k(arg)
+      case Lambda(k) => arg match {
+        case Ignored(tree) => k(Form(tree))  // this Ignored -> Form transformation allows us to combine semantic
+                                             // entries with purely syntactic (e.g. CCGbank entries)
+        case _ => k(arg)
+      }
       case Form(value) => Nonsense
       case Nonsense => Nonsense
-      case Ignored(tree) => arg match { case Ignored(tree2) => Ignored(s"$tree($tree2)"); case _ => Nonsense }
+      case Ignored(tree) => arg match {
+        case Ignored(tree2) => Ignored(s"$tree($tree2)")
+        case _ => Nonsense
+      }
     }
   }
 }
