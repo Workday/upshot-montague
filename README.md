@@ -26,7 +26,7 @@ Background
 > — Larry Wall in `<199709032332.QAA21669@wall.org>`
 
 `montague` takes its name from [Montague
-Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
+emantics](https://en.wikipedia.org/wiki/Montague_grammar), the
 idea that human language can be expressed through formal logic and
 lambda-calculus. The process of inferring this formal representation
 from natural language is called "semantic parsing". Specifically,
@@ -34,6 +34,34 @@ from natural language is called "semantic parsing". Specifically,
 (CCG)](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar), a
 particular grammar formalism that has become popular recently for
 semantic parsing.
+
+Here's an example of a definition in `montague`:
+```
+  ("plus" -> ((N\N)/N, λ {y: Int => λ {x: Int => x + y}}))
+```
+
+Here's what it means:
+- There's a term called "plus".
+- It has the syntactic category `(N\N)/N`. This means that it's something that
+  attaches to a noun (`N`) after it to form a `N\N`, which is a thing that attaches
+  to a noun before it to form another noun. In other words, "plus" must be between
+  two nouns, and the end result of `(Noun) plus (Noun)` syntactically is just another noun.
+  So far so good!
+- It has the semantic definition `λ {y: Int => λ {x: Int => x + y}}`. In other words,
+  it's a function that takes an integer and returns a function that an integer, adding
+  the first integer to it. Uncurrying it (because in Montague semantics, all functions must
+  be curried) simply yields `λ {x: Int, y: Int => x + y}`. Well, that's pretty straightforward.
+
+Looking through the code of the examples below, you'll notice that not all
+definitions look quite like this. Some of them don't have semantics included
+at all (after all, sometimes we're just interested in syntactic parsing). Some
+of them have multiple synonyms for one definition, or multiple definitions
+for a single term (in that case, we say that the term has _semantic ambiguity_).
+Some of them don't operate on single terms at all, but on _matchers_ (functions that try
+to find certain kinds of strings). But the general idea for all of these is the same.
+
+The way you use `montague` is by defining your own _lexicon_ of terms with syntactic
+and semantic definitions. And the semantic parser does the rest.
 
 History
 -------
