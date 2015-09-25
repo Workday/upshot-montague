@@ -240,6 +240,16 @@ _montague_ supports arbitrary syntactic schemes, but the only one built-in is `C
 
 ### Semantic Representations
 
+A `SemanticState` is generally one of two things (in each case, `LF` corresponds to the type of the objects we're dealing with -- in the examples below, `LF = Int`:
+
+- A _form_ `Form[LF]` represents a semantic state that is "complete" (i.e. doesn't consume any arguments) -- for example, `Form(4)` represents the number four.
+- A _lambda_: `λ {x: LF => <semantic state>}` represents a semantic state that must consume arguments -- for example, `λ {x: Int => Form(x + 5)}` represents the function that adds 5 to any integer. Implicit conversions allow us to write this more concisely to `λ {x: Int => x + 5}`. Multi-argument functions are represented by currying (e.g. `λ {y: Int => λ {x: Int => x + y}}`).
+
+There are a few other possible `SemanticStates` that generally shouldn't be specified directly in the lexicon, but can appear in parse results:
+- `Nonsense` represents a parse with no valid semantic outputs.
+- `Ambiguous(Set[SemanticState])` represents a parse with more than one valid semantic output.
+- `Ignored` represents a parse that ignored semantics entirely (i.e. you didn't specify semantic representations in the lexicon).
+
 Exercises for the reader
 ------------------------
 (In rough order of difficulty.)
