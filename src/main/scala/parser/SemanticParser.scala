@@ -42,7 +42,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
   }
 
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
-    str.trim.toLowerCase.split("\\s+")
+    str.trim.toLowerCase.split("\\s+|[.?!]")
   }
 
   override protected def dictLookup(parseToken: ParseToken, spans: Spans): List[Node] = {
