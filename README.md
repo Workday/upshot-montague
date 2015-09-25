@@ -10,7 +10,7 @@ The code currently implements boolean (non-probabilistic) CCG
 parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
 parse search strategy.
 
-![An example parse tree](https://ghe.megaleo.com/upshot/montague/example.svg?raw=true "Example parse tree")
+![An example parse tree](https://ghe.megaleo.com/upshot/montague/blob/master/example.svg?raw=true "Example parse tree")
 
 Authors
 -------
