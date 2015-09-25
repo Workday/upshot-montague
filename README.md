@@ -51,7 +51,7 @@ Here's what it means:
   two nouns, and the end result of `(Noun) plus (Noun)` syntactically is just another noun.
   So far, so good!
 - It has the semantic definition `λ {y: Int => λ {x: Int => x + y}}`. In other words,
-  it's a function that takes an integer and returns a function that an integer, adding
+  it's a function that takes an integer and returns a function that another integer, adding
   the first integer to it. Uncurrying it (because in Montague semantics, all functions must
   be curried) simply yields `λ {x: Int, y: Int => x + y}`. Well, that's pretty straightforward.
 
