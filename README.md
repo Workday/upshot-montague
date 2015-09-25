@@ -150,18 +150,14 @@ implementation of English parsing, based upon multiplying out lexicon
 weights, is hacked by including the token weights within the CCG
 category.)
 
-Possible future projects
-------------------------
-
-### Technical improvements
-
-* Probabilistic parser with rules. [...]
-* Faster parsing:
-	* Agenda-based parsing: Instead of building the parse using
-	CKY (bottom-up), use an agenda to order nodes by some
-	priority. For example, the priority can be the cumulative
-	probability of applying the rules (best-first parsing).
-	* Beam search
+The parser implements a CKY search strategy, which is bottom-up.
+If the parser had weight implemented, we could parse faster using
+agenda-based parsing: You use an agenda to order nodes by some
+priority. For example, the priority can be the cumulative probability
+of applying the rules (best-first parsing). Alternately, instead
+of agenda-based parsing, beam pruning could be used to reduce the
+size of the search space. In this case, only the top *k* weighted
+nodes are kept in any parse cell.
 
 Library overview
 ----------------
