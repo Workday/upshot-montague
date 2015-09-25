@@ -176,8 +176,11 @@ parser as follows:
 
 (See [`InformationStore`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/InformationStore.scala).)
 
-This example uses the older-style CCGBank lexicon - see [the above example](#english-to-semantic-structure) for download instructions.
+`InformationStore` uses [`SemanticRepl`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/parser/SemanticRepl.scala) to implement a very basic information storage and retrieval system, by parsing statements into `Define` constructs and queries into `Query` constructs, then executing them accordingly.
 
+**Important:** This example uses the older-style CCGBank lexicon - see [the above example](#english-to-semantic-structure) for download instructions.
+
+An example interactive session with `InformationStore`:
 ```sh
 > sbt "runMain example.InformationStore"
 >> Joseph is a programmer

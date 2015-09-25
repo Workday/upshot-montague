@@ -5,20 +5,19 @@ import parser.{SemanticRepl, Else, ParserDict, SemanticParser}
 import semantics._
 
 object InformationStore extends SemanticRepl[CcgCat, Statement, Seq[Define]](InformationStoreParser) {
-  def performAction(store: Seq[Define], action: Statement): Seq[Define] = {
+  def performAction(store: Seq[Define], action: Statement): (Seq[Define], String) = {
     action match {
       case definition@Define(_, _, _) =>
-        println("Ok")
-        store :+ definition
+        (store :+ definition, "Ok")
       case Query(relation, subject) =>
         val candidates = store.filter(d => d.relation == relation && d.subject == subject)
                               .map(_.predicate)
-        println(candidates.length match {
+        val output = candidates.length match {
           case 0 => "I don't know"
           case 1 => candidates.head
           case _ => candidates.mkString("{", ", ", "}")
-        })
-        store
+        }
+        (store, output)
     }
   }
 
