@@ -22,8 +22,8 @@ Authors
 Background
 ----------
 
-"Oh, get ahold of yourself. Nobody's proposing that we parse English."
-— Larry Wall in `<199709032332.QAA21669@wall.org>`
+> "Oh, get ahold of yourself. Nobody's proposing that we parse English."
+> — Larry Wall in `<199709032332.QAA21669@wall.org>`
 
 `montague` takes its name from [Montague
 Semantics](https://en.wikipedia.org/wiki/Montague_grammar), the
@@ -50,6 +50,8 @@ and release that too.
 
 Getting Started
 ---------------
+
+`montague` comes with a few simple examples demonstrating some applications of its semantic parsing features.
 
 ### English-to-calculator arithmetic
 
@@ -88,7 +90,8 @@ Output: Ambiguous(16, -4)
 ```
 
 We ignore all unrecognized tokens by adding an `Else` clause in the
-lexicon, which [...]:
+lexicon, which matches all tokens that wouldn't match otherwise, and in
+this case produces semantically null parses:
 
 ```
 > sbt "runMain example.ArithmeticParser Could you please tell me, what is 100 + 100 ?"
@@ -132,7 +135,7 @@ If you do have the CCGBank lexicon and would like to use it, put
 parser as follows:
 
 ```sh
-> sbt "runMain example.CcgBankParser 'Alex and Joseph are writing a parser'"
+> sbt "runMain example.CcgBankParser 'Thom and Alex and Joseph are writing a parser'"
 ```
 
 Functionality and limitations
