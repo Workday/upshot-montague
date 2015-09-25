@@ -34,9 +34,8 @@ sealed trait Statement
 case class Define(relation: String, subject: String, predicate: String) extends Statement
 case class Query(relation: String, subject: String) extends Statement
 
-
 // Syntax
-case object Q extends TerminalCat { val category = "Q" } // syntactic category for questions
+case object Q extends TerminalCat { val category = "Q" } // syntactic category for question words
 
 // Lexicon
 object InformationStoreLexicon {

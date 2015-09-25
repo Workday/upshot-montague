@@ -192,23 +192,38 @@ Ok
 alex's(bandmates)
 ```
 
-Functionality and limitations
------------------------------
+Library overview
+----------------
 
-The code currently supports boolean parsing: A parse of the input
+[here's how you build something new]
+
+[here's some cool Scala stuff that's excellent for CCG]
+
+Exercises for the reader
+------------------------
+(In rough order of difficulty.)
+
+### Parsing
+
+1. While all of our examples involve CCG parsing, _montague_ supports alternative syntactic schemes. Create your own semantic scheme (that is, a type hierarchy that inherits from `SyntacticLabel`), and parse something with it.
+
+1. **Composition.** _montague_'s CCG implementation currently supports only one of the three CCG combinators: the _application_ combinator (`X/Y Y -> X`, `X X\Y -> Y`). Extend it to also support the [_composition_ combinator](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar#Composition_Combinators) (`X/Y Y/Z -> X/Z`).
+
+1. **Type-raising.** As above, but for the [_type-raising_ combinator](https://en.wikipedia.org/wiki/Combinatory_categorial_grammar#Type-raising_Combinators) (`X -> T/(T\X)`).
+
+1. **Probabilistic parsing.** The parser currently supports boolean parsing: a parse of the input
 string is either possible (true) or impossible (false).
+_(This corresponds to implementing the boolean semiring parser of
+[Goodman, 1999](http://www.aclweb.org/anthology/J99-4004) -- see
+Figure 5.)_
 
-This corresponds to implementing the boolean semiring parser of
-[Goodman, 1999](http://www.aclweb.org/anthology/J99-4004) (see
-Figure 5).
+    Extend the code so that it supports
+    probabilistic or weighted parsing. (The existing probabilistic
+    implementation of English parsing, based upon multiplying out lexicon
+    weights, is hacked by including the token weights within the CCG
+    category.)
 
-A possible future project is to extend the code so that it supports
-probabilistic or weighted parsing. (The existing probabilistic
-implementation of English parsing, based upon multiplying out lexicon
-weights, is hacked by including the token weights within the CCG
-category.)
-
-The parser implements a CKY search strategy, which is bottom-up.
+1. **Speed improvements.** The parser implements a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm) search strategy, which is bottom-up.
 If the parser had weight implemented, we could parse faster using
 agenda-based parsing: You use an agenda to order nodes by some
 priority. For example, the priority can be the cumulative probability
@@ -217,27 +232,18 @@ of agenda-based parsing, beam pruning could be used to reduce the
 size of the search space. In this case, only the top *k* weighted
 nodes are kept in any parse cell.
 
-Library overview
-----------------
+### Applications
 
-[here's how you build something new]
-
-[here's some cool Scala stuff that's excellent for CCG]
+1. Add more features to the `ArithmeticParser` example. For example, improve the tokenizer to correctly handle infix expressions without spaces (e.g. `(1+2)*3`), or add more operations.
+1. Add more features to the `InformationStore` example. For example, add other types of relations, or support more kinds of expressions.
+1. **IFTTT.**
+1. **Slack bot.**
+1. **† Game semantics.**
+1. **† English to Freebase.**
+1. **† English to SQL.**
 
 Related work
 ------------
 
 * [SEMPRE](http://www-nlp.stanford.edu/software/sempre/) is a toolkit
 for training semantic parsers.
-
-TODO
-----
-
-- Low-level unit tests
-- High-level tests for parsing and semantic comprehension (i.e. the
-things now in `SemanticParser#main`)
-- Add pretty examples to the readme
-- Cleanup of UPSHOT-specific code
-- Bring in a simplified version of the SQL-specific stuff from UPSHOT
-- Some more in-depth fun examples - e.g. game logic? SQL-like?
-- Fix up toSvg output
