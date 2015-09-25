@@ -133,7 +133,7 @@ Output: 200
 
 ### English-to-syntactic structure
 
-(See [`CcgBankParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/CcgParser.scala).)
+(See [`CcgBankParser`](https://ghe.megaleo.com/upshot/montague/blob/master/src/main/scala/example/CcgBankParser.scala).)
 
 Using the CCGBank lexicon, we parse English sentences into syntax dependency trees.
 
