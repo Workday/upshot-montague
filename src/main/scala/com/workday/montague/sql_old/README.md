@@ -1,0 +1,1 @@
+This is a grab bag of libraries from the original `upshot` project for dealing with SQL/SOQL, included here as a reference toward the goal of building a complete English->SQL/SOQL parser in `montague`.
