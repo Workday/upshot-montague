@@ -10,7 +10,7 @@ The code currently implements boolean (non-probabilistic) CCG
 parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
 parse search strategy.
 
-![An example parse tree](https://ghe.megaleo.com/upshot/montague/blob/master/example.png?raw=true "Example parse tree")
+![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/example.png?raw=true "Example parse tree")
 
 Authors
 -------
@@ -18,6 +18,9 @@ Authors
 * [Thomas Kim](https://twitter.com/tksfz)
 * [Joseph Turian](http://joseph.turian.com)
 * [Aleksandr Nisnevich](http://alex.nisnevich.com/portfolio)
+
+Note that the repo history doesn't accurately reflect authorship,
+because some of the code was ported from another repo.
 
 Background
 ----------
@@ -297,3 +300,7 @@ Related work
 
 * [SEMPRE](http://www-nlp.stanford.edu/software/sempre/) is a toolkit
 for training semantic parsers.
+* [Cornell Semantic Parsing Framework](https://bitbucket.org/yoavartzi/spf)
+is an open source research software package. It includes a semantic
+parsing algorithm, a flexible meaning representation language and
+learning algorithms.
