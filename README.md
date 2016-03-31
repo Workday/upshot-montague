@@ -4,26 +4,46 @@ montague
 `montague` is a little CCG semantic parsing library for Scala.
 
 You can build on this code to translate English-into-SQL,
-English-into-API commands, etc.
+English-into-API commands, etc. To do so, you need to build a lexicon
+for your specific application. We include a few sample lexicons,
+as described in the [Getting Started](https://github.com/workday/upshot-montague/#getting-started)
+section of this README.
 
 The code currently implements boolean (non-probabilistic) CCG
 parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
 parse search strategy.
 
-![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/example.png?raw=true "Example parse tree")
+![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/doc/example.png?raw=true "Example parse tree")
 
 Authors
 -------
 
 * [Thomas Kim](https://twitter.com/tksfz)
 * [Joseph Turian](http://joseph.turian.com)
-* [Aleksandr Nisnevich](http://alex.nisnevich.com/portfolio)
+* [Alex Nisnevich](http://alex.nisnevich.com/portfolio)
 
 Note that the repo history doesn't accurately reflect authorship,
-because some of the code was ported from another repo.
+because much of the code was ported from the original UPSHOT repo.
 
 Background
 ----------
+
+At [UPSHOT](http://blogs.workday.com/workday-acquires-upshot/)
+(acquired by Workday), we built a semantic parser that translated
+English into SQL, and — later — English into SOQL (the Salesforce
+query language). This was packaged in a mobile application with the
+following architecture:
+
+![UPSHOT architecture](https://github.com/Workday/upshot-montague/blob/master/doc/upshot-architecture.png?raw=true "UPSHOT architecture")
+
+This package extracts and open-sources the core CCG-based semantic
+parser component of UPSHOT, in a form that is general-purpose and
+self-contained. We hope that that other people find it useful. We
+plan to clean up the SQL-generation code and release that too. If
+you have more requests, please email us.
+
+Introduction
+------------
 
 > "Oh, get ahold of yourself. Nobody's proposing that we parse English."
 > — Larry Wall in `<199709032332.QAA21669@wall.org>`
@@ -69,19 +89,6 @@ is the same.
 
 The way you use `montague` is by defining your own _lexicon_ of terms with syntactic
 and semantic definitions. And the semantic parser does the rest.
-
-History
--------
-
-At [UPSHOT](http://blogs.workday.com/workday-acquires-upshot/)
-(acquired by Workday), we built a semantic parser that translated
-English into SQL, and—later—English into SOQL (the Salesforce query
-language).
-
-This package improves upon and open-sources the CCG-based semantic
-parser component of UPSHOT. We hope that that other people find it
-useful and educational. We plan to clean up the SQL-generation code
-and release that too.
 
 Getting Started
 ---------------
