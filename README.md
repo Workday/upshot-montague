@@ -42,6 +42,8 @@ self-contained. We hope that that other people find it useful. We
 plan to clean up the SQL-generation code and release that too. If
 you have more requests, please email us.
 
+Joseph Turian and Alex Nisnevich gave a [talk at Strata 2016](http://conferences.oreilly.com/strata/hadoop-big-data-ca/public/schedule/detail/47360) introducing `montague` (video [here](https://www.youtube.com/watch?v=lnV2JnNBM1I&feature=youtu.be)).
+
 Introduction
 ------------
 
