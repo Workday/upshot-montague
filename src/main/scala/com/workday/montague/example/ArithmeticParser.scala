@@ -1,4 +1,4 @@
-package com.workday.montague.example
+package example
 
 import com.workday.montague.ccg.{TerminalCat, X, N, CcgCat}
 import com.workday.montague.parser._
