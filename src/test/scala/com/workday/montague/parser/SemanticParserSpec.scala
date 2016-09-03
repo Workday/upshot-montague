@@ -1,8 +1,8 @@
 package com.workday.montague.parser
 
 import com.workday.montague.ccg._
-import com.workday.montague.example.ArithmeticParser
 import com.workday.montague.semantics._
+import example.ArithmeticParser
 import org.scalatest.FlatSpec
 
 class SemanticParserSpec extends FlatSpec {
