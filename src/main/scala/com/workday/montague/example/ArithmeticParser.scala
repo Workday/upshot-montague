@@ -3,6 +3,7 @@ package example
 import com.workday.montague.ccg.{TerminalCat, X, N, CcgCat}
 import com.workday.montague.parser._
 import com.workday.montague.semantics._
+import com.workday.montague.semantics.FunctionReaderMacro.λ
 
 case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
 

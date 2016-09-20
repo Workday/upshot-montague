@@ -3,6 +3,7 @@ package com.workday.montague
 package object semantics {
   def identity: SemanticState = new SemanticState {
     override def apply(arg: SemanticState): SemanticState = arg
+    override def toString: String = "identity"
   }
 
   /**
