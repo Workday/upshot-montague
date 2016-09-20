@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream
 import com.workday.montague.ccg.SyntacticLabel
 import com.workday.montague.cky.{ParseToken, Spans}
 import org.apache.commons.lang.StringEscapeUtils._
-import com.workday.montague.semantics.{Form, SemanticState}
+import com.workday.montague.semantics.{Lambda, Form, SemanticState}
 
 import scala.reflect.ClassTag
 
@@ -139,14 +139,44 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
     val operatorString = operatorNode.toStringHelp(indent=indent, currentIndent=nextIndent, withSemantics=false)
     val argumentString = argumentNode.toStringHelp(indent=indent, currentIndent=nextIndent, withSemantics=false)
     val str = s"($spans, '" + s.toString + "', " + operatorString + ", \n" + indent + argumentString + ")"
-    if (withSemantics) m.toString + s",\n" + str
+    if (withSemantics) meaningString + s",\n" + str
     else str
   }
   def toDotStringHelp(pre: String): String = {
-    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + escapeJava(m.toString + "\n" + s.toString) + "\"];\n" +
+    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + escapeJava(meaningString + "\n" + s.toString) + "\"];\n" +
       s"$pre -> ${pre}1;\n" +
       s"$pre -> ${pre}2;\n" +
       node1.toDotStringHelp(pre+"1") + node2.toDotStringHelp(pre+"2")
+  }
+
+  val meaningString: String = m match {
+    case l: Lambda[_] =>
+      val rawString = l.toString
+
+      // If we're using pretty function representations produced by FunctionReaderMacro,
+      // do some magic here to generally handle bound variables correctly.
+      if (rawString.contains("Lambda(")) {
+        val predicate = operatorNode match {
+          case nonTerminalNode: NonTerminal[S] =>
+            // If the operatorNode is a NonTerminal node, then we grab its predicate so we get all previous bindings.
+            nonTerminalNode.meaningString.split(" => ").drop(1).mkString(" => ").dropRight(1) // pred is everything after first "=>"
+          case _ =>
+            // Otherwise, we don't care, let's just use this node's semantics.
+            rawString
+        }
+
+        if (operatorNode.semantic.toString.contains("Lambda(")) {
+          val boundVariable = operatorNode.semantic.toString.split("Lambda\\(")(1).split(':')(0) // var is between "Lambda(" and ":"
+          val boundArgument = argumentNode.semantic.toString
+
+          predicate.replaceAllLiterally(boundVariable, boundArgument)
+        } else {
+          predicate
+        }
+      } else {
+        rawString
+      }
+    case _ => m.toString
   }
 
   private[this] def node1 = {

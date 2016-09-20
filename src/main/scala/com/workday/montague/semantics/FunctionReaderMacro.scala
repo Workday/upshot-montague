@@ -47,18 +47,25 @@ trait Wrapper {
     // For example:
     //   From: Lambda(((o: myPackage.ObjectType) => (com.workday.montague.semantics.Lambda.apply[myPackage.Condition](new com.workday.montague.semantics.FunctionWrapper[com.workday.montague.semantics.SemanticState,com.workday.montague.semantics.SemanticState](com.workday.montague.semantics.SemanticImplicits.FuncToSemanticState[myPackage.Condition](((c: myPackage.Condition) => Choose.apply(o, c))), "((c: myPackage.Condition) => Choose.apply(o, c))")): com.workday.montague.semantics.SemanticState)))
     //     to: Lambda(o: ObjectType => Lambda(c: Condition => Choose(o, c)))
-    representation
+    var cleanedUp = representation
       .replaceAll("""\[.*?\]\(""", "(")
+      .replaceAll(""", \\\".*?\\\"\)""", ")")
       .replaceAll(", \\\".*?\\\"\\)", ")")
       .replaceAll("SemanticImplicits.FuncToSemanticState\\((.*?)\\)", "$1")
       .replaceAllLiterally("com.workday.montague.semantics.", "")
       .replaceAllLiterally(".apply", "")
       .replaceAllLiterally(": SemanticState", "")
-      .replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
+
+    while (cleanedUp.contains("new FunctionWrapper")) {
+      cleanedUp = cleanedUp.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
+    }
+
+    cleanedUp
       .replaceAll(": [a-z]*\\.", ": ")
       .replaceAll("""^\((.*)\)$""", "$1")
       .replaceAll("""\((.*)\) =>""", "$1 =>")
       .replaceAll("""=> \((.*)\)""", "=> $1")
+      .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
