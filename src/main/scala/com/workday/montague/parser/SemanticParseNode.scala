@@ -156,7 +156,7 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
 
       // If we're using pretty function representations produced by FunctionReaderMacro,
       // do some magic here to generally handle bound variables correctly.
-      if (rawString.contains("Lambda(")) {
+      if (rawString.contains(" => ")) {
         val predicate = operatorNode match {
           case nonTerminalNode: NonTerminal[S] =>
             // If the operatorNode is a NonTerminal node, then we grab its predicate so we get all previous bindings.
