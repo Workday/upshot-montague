@@ -13,7 +13,8 @@ The code currently implements boolean (non-probabilistic) CCG
 parsing, using a [CKY](https://en.wikipedia.org/wiki/CYK_algorithm)-based
 parse search strategy.
 
-![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/doc/example.png?raw=true "Example parse tree")
+![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/doc/example.png?raw=true "Example syntactic parse tree")
+![An example parse tree](https://github.com/Workday/upshot-montague/blob/master/doc/example_math.png?raw=true "Example semantic tree")
 
 Authors
 -------
