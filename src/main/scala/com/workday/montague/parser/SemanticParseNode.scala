@@ -63,6 +63,7 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
     import scala.sys.process._
     val out = (cmd #< is).lines_!
     out.mkString("\n")
+       .replaceAllLiterally("Lambda", "&#955;")  // Pretty rendering of Lambdas, useful when FunctionReaderMacro is used.
   }
 
   def spans: Spans
