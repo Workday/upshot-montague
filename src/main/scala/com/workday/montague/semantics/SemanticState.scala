@@ -19,7 +19,11 @@ trait SemanticState {
       case Lambda(k) => arg match {
         case Ignored(tree) => k(Form(tree))  // this Ignored -> Form transformation allows us to combine semantic
                                              // entries with purely syntactic (e.g. CCGbank entries)
-        case _ => k(arg)
+        case _ => try {
+          k(arg)
+        } catch {
+          case e: ClassCastException => Nonsense
+        }
       }
       case Form(value) => Nonsense
       case Nonsense => Nonsense
