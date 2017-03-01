@@ -13,6 +13,8 @@ extends CkyParserWithList[SemanticParseNode[S]] {
 
   protected type Node = SemanticParseNode[S]
 
+  private var caughtSemanticsExceptions: Set[String] = Set()
+
   def main(args: Array[String]): Unit = {
     val input = args.mkString(" ")
     val result = parse(input)
@@ -39,6 +41,8 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     val chart = super.parseToChart(tokens)
     new SemanticParseResult(tokens, chart)
   }
+
+  def getCaughtSemanticsExceptions: Set[String] = caughtSemanticsExceptions
 
   private def defaultTokenizer(str: String): IndexedSeq[String] = {
     str.trim.toLowerCase.split("\\s+|[.?!]")
@@ -71,7 +75,9 @@ extends CkyParserWithList[SemanticParseNode[S]] {
   private[this] def createDerivedNode(predNode: Node, argNode: Node, newSyntactic: S): Option[NonTerminal[S]] = {
     val newSemantic = predNode.semantic.apply(argNode.semantic)
     newSemantic match {
-      case Nonsense => None
+      case Nonsense(exs) =>
+        caughtSemanticsExceptions = caughtSemanticsExceptions ++ exs.map(_.getMessage)
+        None
       case _ => Some(NonTerminal(newSyntactic, newSemantic, predNode, argNode))
     }
   }
@@ -85,7 +91,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     if (matrix(iStart, iEnd).nonEmpty) {
       matrix(iStart, iEnd) =
         matrix(iStart, iEnd)
-          .filter(_.semantic != Nonsense)
+          .filter(!_.semantic.isInstanceOf[Nonsense])
           .distinctBy(x => (x.semantic, x.syntactic))
     }
   }
