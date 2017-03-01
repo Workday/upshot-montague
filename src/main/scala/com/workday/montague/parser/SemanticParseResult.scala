@@ -15,7 +15,7 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
   def parses = chart(0, chart.n - 1)
 
   def bestParse = {
-    parses.sortBy(node => -node.syntactic.score)
+    parses.sortBy(node => (node.exs.size, -node.syntactic.score))
       .headOption
   }
 
