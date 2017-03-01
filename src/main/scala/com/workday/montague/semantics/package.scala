@@ -24,8 +24,8 @@ package object semantics {
           val fx: SemanticState = f.apply(x)
           val gx: SemanticState = g.apply(x)
           (fx, gx) match {
-            case (Form(left: LF), Form(right: LF)) => joiner.applyOrElse[(LF, LF), SemanticState]((left, right), _ => Nonsense)
-            case _ => Nonsense
+            case (Form(left: LF), Form(right: LF)) => joiner.applyOrElse[(LF, LF), SemanticState]((left, right), _ => Nonsense())
+            case _ => Nonsense()
           }
         }
       }

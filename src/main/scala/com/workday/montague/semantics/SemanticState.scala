@@ -19,13 +19,20 @@ trait SemanticState {
       case Lambda(k) => arg match {
         case Ignored(tree) => k(Form(tree))  // this Ignored -> Form transformation allows us to combine semantic
                                              // entries with purely syntactic (e.g. CCGbank entries)
-        case _ => k(arg)
+        case _ => try {
+          k(arg)
+        } catch {
+          case ex: ClassCastException => Nonsense(Set(ex))
+        }
       }
-      case Form(value) => Nonsense
-      case Nonsense => Nonsense
+      case Form(value) => Nonsense()
+      case Nonsense(exs) => arg match {
+        case Nonsense(exs2) => Nonsense(exs ++ exs2)
+        case _ => Nonsense(exs)
+      }
       case Ignored(tree) => arg match {
         case Ignored(tree2) => Ignored(s"$tree($tree2)")
-        case _ => Nonsense
+        case _ => Nonsense()
       }
     }
   }
@@ -40,7 +47,7 @@ case class Form[LF](value: LF) extends SemanticState {
 }
 
 /// Represents a parse with no valid semantic outputs
-case object Nonsense extends SemanticState
+case class Nonsense(ex: Set[ClassCastException] = Set()) extends SemanticState
 
 /// Represents a parse with more than one valid semantic output
 case class Ambiguous(options: Set[SemanticState]) extends SemanticState {
@@ -74,9 +81,9 @@ object SemanticImplicits {
             case fn: SemanticState => fn
             case res: LF => Form(res)
           }
-        case _ => Nonsense
+        case _ => Nonsense()
       }
-    case _ => Nonsense
+    case _ => Nonsense()
   }
 
   implicit def PartialFuncToSemanticState[LF](func: PartialFunction[LF, _]): (SemanticState => SemanticState) = {
@@ -92,8 +99,8 @@ object SemanticImplicits {
           } else {
             Nonsense
           }
-        case _ => Nonsense
+        case _ => Nonsense()
       }
-    case _ => Nonsense
+    case _ => Nonsense()
   }
 }
