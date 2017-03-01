@@ -86,6 +86,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
       matrix(iStart, iEnd) =
         matrix(iStart, iEnd)
           // .filter(!_.semantic.isInstanceOf[Nonsense])
+          .sortBy(_.exs.size)
           .distinctBy(x => (x.semantic, x.syntactic))
     }
   }
