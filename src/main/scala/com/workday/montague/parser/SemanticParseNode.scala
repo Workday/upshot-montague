@@ -9,7 +9,7 @@ import com.workday.montague.semantics.{Lambda, Form, SemanticState}
 
 import scala.reflect.ClassTag
 
-abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val semantic: SemanticState) {
+abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val semantic: SemanticState, val exs: Set[ClassCastException]) {
   def mapLogicalForm[LF : ClassTag, T](fn: LF => T): Option[T] = {
     logicalFormOption[LF].map(fn)
   }
@@ -99,7 +99,7 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
  *       the chart.
  * @tparam S The syntactic scheme. In our case, CcgCat
  */
-case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: ParseToken, spans: Spans) extends SemanticParseNode(s, m) {
+case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: ParseToken, spans: Spans, x: Set[ClassCastException]) extends SemanticParseNode(s, m, x) {
   override def toString: String = toStringHelp(withSemantics = true)
   def toStringHelp(indent: String = "", currentIndent: String = "", withSemantics: Boolean = false): String = {
     val str = "('" + s.toString + "', " + parseToken.toString() + ")"
@@ -133,7 +133,8 @@ case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: 
  * @param argumentNode
  * @tparam S The syntactic scheme. In our case, CcgCat
  */
-case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorNode: SemanticParseNode[S], argumentNode: SemanticParseNode[S]) extends SemanticParseNode(s, m) {
+case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorNode: SemanticParseNode[S], argumentNode: SemanticParseNode[S],
+                                               x: Set[ClassCastException]) extends SemanticParseNode(s, m, x) {
   override def toString: String = toStringHelp(indent="  ", withSemantics=true)
   def toStringHelp(indent: String = "", currentIndent: String = "", withSemantics: Boolean = false): String = {
     val nextIndent = currentIndent + indent

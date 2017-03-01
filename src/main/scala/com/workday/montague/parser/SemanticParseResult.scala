@@ -21,7 +21,6 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
 
   def semantics: SemanticState = {
     val semanticResults = semanticCompleteParses.map(_.semantic).toSet
-    println
     semanticResults.size match {
       case 0 => Nonsense()
       case 1 => semanticResults.head
