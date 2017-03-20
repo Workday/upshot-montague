@@ -53,7 +53,7 @@ trait Wrapper {
       .replaceAll(", \\\".*?\\\"\\)", ")")
       .replaceAll("\\.([\\+\\-*/]|:\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
       .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
-      .replaceAll("\\s(\\(\\S*\\))\\([\\w\\.]*\\.(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", "$2$1")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
+      .replaceAll("\\s(\\(\\S*\\))\\([\\w\\.]*\\.(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", " $2$1")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
       .replaceAllLiterally("com.workday.montague.semantics.", "")
       .replaceAllLiterally("collection.this.", "")
       .replaceAllLiterally(".apply", "")
