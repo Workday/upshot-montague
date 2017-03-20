@@ -51,8 +51,11 @@ trait Wrapper {
       .replaceAll("""\[.*?\]\(""", "(")
       .replaceAll(""", \\\".*?\\\"\)""", ")")
       .replaceAll(", \\\".*?\\\"\\)", ")")
-      .replaceAll("SemanticImplicits.FuncToSemanticState\\((.*?)\\)", "$1")
+      .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
+      .replaceAll("\\([\\w\\.]*canBuildFrom\\[[\\w\\.]*\\]\\)", "")
+      .replaceAll("\\.([\\+\\-*/]|:\\+)\\(", " $1 (")   // e.g. 1.+(2) => 1 + (2)
       .replaceAllLiterally("com.workday.montague.semantics.", "")
+      .replaceAllLiterally("collection.this.", "")
       .replaceAllLiterally(".apply", "")
       .replaceAllLiterally(": SemanticState", "")
 
