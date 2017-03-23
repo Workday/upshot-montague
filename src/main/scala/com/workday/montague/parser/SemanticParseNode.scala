@@ -141,11 +141,14 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
     val operatorString = operatorNode.toStringHelp(indent=indent, currentIndent=nextIndent, withSemantics=false)
     val argumentString = argumentNode.toStringHelp(indent=indent, currentIndent=nextIndent, withSemantics=false)
     val str = s"($spans, '" + s.toString + "', " + operatorString + ", \n" + indent + argumentString + ")"
+
     if (withSemantics) meaningString + s",\n" + str
     else str
   }
   def toDotStringHelp(pre: String): String = {
-    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + escapeJava(meaningString + "\n" + s.toString) + "\"];\n" +
+    val sem = meaningString.replaceAll("(\\S),(\\S)", "$1, $2")  // Prettify a little by adding spaces after commas.
+    val nodeText = escapeJava(sem + "\n" + s.toString)
+    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + nodeText + "\"];\n" +
       s"$pre -> ${pre}1;\n" +
       s"$pre -> ${pre}2;\n" +
       node1.toDotStringHelp(pre+"1") + node2.toDotStringHelp(pre+"2")
