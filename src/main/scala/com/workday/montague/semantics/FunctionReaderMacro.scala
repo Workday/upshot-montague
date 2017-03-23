@@ -48,9 +48,9 @@ trait Wrapper {
     //   From: Lambda(((o: myPackage.ObjectType) => (com.workday.montague.semantics.Lambda.apply[myPackage.Condition](new com.workday.montague.semantics.FunctionWrapper[com.workday.montague.semantics.SemanticState,com.workday.montague.semantics.SemanticState](com.workday.montague.semantics.SemanticImplicits.FuncToSemanticState[myPackage.Condition](((c: myPackage.Condition) => Choose.apply(o, c))), "((c: myPackage.Condition) => Choose.apply(o, c))")): com.workday.montague.semantics.SemanticState)))
     //     to: Lambda(o: ObjectType => Lambda(c: Condition => Choose(o, c)))
     var cleanedUp = representation
+      .replaceAll(", \\\".*?\\\"\\)", ")")
       .replaceAll("""\[.*?\]\(""", "(")
       .replaceAll(""", \\\".*?\\\"\)""", ")")
-      .replaceAll(", \\\".*?\\\"\\)", ")")
       .replaceAll("\\.([\\+\\-*/]|:\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
       .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
       .replaceAll("\\s(\\(\\S*\\))\\([\\w\\.]*\\.(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", " $2$1")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
