@@ -25,10 +25,10 @@ sealed trait CcgCat extends SyntacticLabel[CcgCat] {
   def /(arg: CcgCat): CcgCat = ForwardCat(this, arg)
   def |(arg: CcgCat): CcgCat = ForwardsBackwardsCat(this, arg)
   def apply(label: String): CcgCat = LabelledCat(this, Some(label))
-  def %(pr: Double) = ProbabilisticCat(this, pr)
+  def %(pr: Double): CcgCat = ProbabilisticCat(this, pr)
 
-  def toSimpleString = category + (if (label.isDefined) s"[${label.get}]" else "")
-  override def toString = toSimpleString + (if (prob != 1.0) s" [prob = ${prob.toFloat}]" else "")
+  def toSimpleString: String = category + (if (label.isDefined) s"[${label.get}]" else "")
+  override def toString: String = toSimpleString + (if (prob != 1.0) s" [prob = ${prob.toFloat}]" else "")
 }
 
 // ForwardCat(A, B) = A/B

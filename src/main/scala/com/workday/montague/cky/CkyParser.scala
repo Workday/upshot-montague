@@ -35,7 +35,7 @@ trait CkyParser[C] {
         val iEnd = iStart + spanLen - 1
         // We need to invoke newEntry even when abort = true because otherwise the chart
         // contains null and we get NPE's e.g. when callers ask for the final parses
-        chart(iStart, iEnd) = newEntry(ParseToken(tokens = tokens.slice(iStart, iEnd + 1)), Spans(iStart, iEnd+1))
+        chart(iStart, iEnd) = newEntry(ParseToken(tokens = tokens.slice(iStart, iEnd + 1)), Spans(iStart, iEnd + 1))
         if (!abort) {
           // For this span, consider all binary productions
           for (iPartition <- iStart + 1 to iEnd) {

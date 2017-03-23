@@ -29,11 +29,11 @@ extends (String => Seq[(S, SemanticState)]) {
     ParserDict(newMap.toMap, funcs, fallbacks)
   }
 
-  def withFunc(func: String => Seq[(S, SemanticState)]) = {
+  def withFunc(func: String => Seq[(S, SemanticState)]): ParserDict[S] = {
     ParserDict(map, funcs :+ func, fallbacks)
   }
 
-  def withFallback(fallback: String => Seq[(S, SemanticState)]) = {
+  def withFallback(fallback: String => Seq[(S, SemanticState)]): ParserDict[S] = {
     ParserDict(map, funcs, fallbacks :+ fallback)
   }
 

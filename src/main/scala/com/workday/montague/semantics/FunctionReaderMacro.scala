@@ -16,12 +16,12 @@ object FunctionReaderMacro {
 
     def apply[LF](func: PartialFunction[LF, _]): SemanticState = macro applyMacroPartial[LF]
 
-    def applyMacroTotal[LF: c.WeakTypeTag](c: Context)(func: c.Expr[LF => _]) = {
+    def applyMacroTotal[LF: c.WeakTypeTag](c: Context)(func: c.Expr[LF => _]): c.Expr[LF] = {
       import c.universe._
       c.Expr(q"Lambda[${c.weakTypeOf[LF]}](new FunctionWrapper(SemanticImplicits.FuncToSemanticState($func), ${show(func.tree)})): SemanticState")
     }
 
-    def applyMacroPartial[LF: c.WeakTypeTag](c: Context)(func: c.Expr[PartialFunction[LF, _]]) = {
+    def applyMacroPartial[LF: c.WeakTypeTag](c: Context)(func: c.Expr[PartialFunction[LF, _]]): c.Expr[LF] = {
       import c.universe._
       c.Expr(q"Lambda[${c.weakTypeOf[LF]}](new FunctionWrapper(SemanticImplicits.PartialFuncToSemanticState($func), ${show(func.tree)})): SemanticState")
     }
@@ -30,13 +30,13 @@ object FunctionReaderMacro {
 
 // A unary total function with a specified string representation.
 class FunctionWrapper[P, R](val fn: P => R, val representation: String) extends (P => R) with Wrapper {
-  def apply(p: P) = fn(p)
+  def apply(p: P): R = fn(p)
 }
 
 // A unary partial function with a specified string representation.
 class PartialFunctionWrapper[P, R](val fn: PartialFunction[P, R], val representation: String) extends PartialFunction[P, R] with Wrapper {
-  def apply(p: P) = fn(p)
-  def isDefinedAt(x: P) = fn.isDefinedAt(x)
+  def apply(p: P): R = fn(p)
+  def isDefinedAt(x: P): Boolean = fn.isDefinedAt(x)
 }
 
 trait Wrapper {
@@ -70,7 +70,7 @@ trait Wrapper {
       .replaceAll("""^\((.*)\)$""", "$1")  // Remove parentheses ...
       .replaceAll("""\((.*)\) =>""", "$1 =>")  // etc ...
       .replaceAll("""=> \((.*)\)""", "=> $1")  // etc ...
-      .replaceAll("""=> \((.*)\)""", "=> $1")  // etc ...
+      .replaceAll("""=> \((.*)\)""", "=> $1")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")  // etc ...
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")

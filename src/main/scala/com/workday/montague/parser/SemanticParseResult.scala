@@ -12,9 +12,9 @@ import scala.reflect.ClassTag
  *  - intermediate results and helper methods.
  */
 class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String], val chart: Chart[List[SemanticParseNode[S]]]) {
-  def parses = chart(0, chart.n - 1)
+  def parses: List[SemanticParseNode[S]] = chart(0, chart.n - 1)
 
-  def bestParse = {
+  def bestParse: Option[SemanticParseNode[S]] = {
     // Sort by # of semantic exceptions (less first), then whether the semantics are complete (true -> false), then the syntactic score (highest first).
     parses.sortBy(node => (node.exs.size, !node.isSemanticComplete, -node.syntactic.score))
       .headOption
@@ -29,22 +29,27 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
     }
   }
 
-  def totalChartSize = chart.allCells.map(_._2.size).sum
+  def totalChartSize: Int = chart.allCells.map(_._2.size).sum
 
-  def allChartParseNodes = chart.allCells.map(_._2).flatten
+  def allChartParseNodes: IndexedSeq[SemanticParseNode[S]] = {
+    chart.allCells.flatMap(_._2)
+  }
 
-  def allChartCompleteSemantics[LF : ClassTag] = allChartParseNodes.map(_.semantic).collect { case Form(lf: LF) => lf }
+  def allChartCompleteSemantics[LF : ClassTag]: IndexedSeq[LF] = {
+    allChartParseNodes.map(_.semantic).collect { case Form(lf: LF) => lf }
+  }
+
   /**
    * @return Indexes of unrecognized tokens.
    */
-  def findUnrecognizedAs(recognized: SemanticParseNode[S] => Boolean) = {
+  def findUnrecognizedAs(recognized: SemanticParseNode[S] => Boolean): IndexedSeq[Int] = {
     findEventuallyRecognizedAs(chart, recognized)
-      .zipWithIndex                         // form list of (recognized, index) pairs
-      .filter(_._1 == false)                // take the unrecognized ones
-      .map(unrecog => unrecog._2)   // splice the corresponding tokens by index
+      .zipWithIndex                // form list of (recognized, index) pairs
+      .filter(!_._1)               // take the unrecognized ones
+      .map(unrecog => unrecog._2)  // splice the corresponding tokens by index
   }
 
-  def semanticCompleteParses = {
+  def semanticCompleteParses: List[SemanticParseNode[S]] = {
     parses.filter(_.isSemanticComplete)
   }
 
@@ -65,14 +70,15 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
    * i.e. all position in which, if we insert a trace, we might be able to parse
    * the entire query.
    */
-  def twoCoverings = {
+  def twoCoverings: IndexedSeq[Int] = {
     val n = chart.n
 
-    (0 until n-1).flatMap(i =>
-      if (chart(0,i).nonEmpty && chart(i+1, n-1).nonEmpty)
-        Some(i+1)
-      else
+    (0 until n - 1).flatMap(i =>
+      if (chart(0, i).nonEmpty && chart(i + 1, n - 1).nonEmpty) {
+        Some(i + 1)
+      } else {
         None
+      }
     )
   }
 
@@ -81,36 +87,41 @@ class SemanticParseResult[S <: SyntacticLabel[S]](val tokens: IndexedSeq[String]
     val n = chart.n
     print("     ")
     for(iEnd <- 0 until n) {
-      print("%5d".format(iEnd+1))
+      print("%5d".format(iEnd + 1))
     }
     println()
     for(iStart <- 0 until n) {
       print("%5d".format(iStart))
       for(iEnd <- 0 until n)
-        if (iEnd < iStart)
+        if (iEnd < iStart) {
           print("     ")
-        else
-          print("%5d".format(chart(iStart,iEnd).length))
+        } else {
+          print("%5d".format(chart(iStart, iEnd).length))
+        }
       println()
     }
     println()
     // Now print the two-coverings
     for(i <- 0 until n-1) {
-      if (chart(0,i).nonEmpty && chart(i+1, n-1).nonEmpty)
+      if (chart(0, i).nonEmpty && chart(i + 1, n - 1).nonEmpty) {
         println(s"2-covering parse with break after $i")
+      }
     }
 
     // Now print the number of empty spans covering each token
     val emptyCoveringsPerToken = scala.collection.mutable.ArrayBuffer.fill(n)(0)
     val totalCoveringsPerToken = scala.collection.mutable.ArrayBuffer.fill(n)(0)
     println(emptyCoveringsPerToken.toString())
-    for(spanLen <- 1 to n;
-        iStart <- 0 until n - spanLen + 1) {
+    for {
+      spanLen <- 1 to n
+      iStart <- 0 until n - spanLen + 1
+    } {
       val iEnd = iStart + spanLen - 1
       for (i <- iStart to iEnd) {
         totalCoveringsPerToken(i) += 1
-        if (chart(iStart, iEnd).isEmpty)
+        if (chart(iStart, iEnd).isEmpty) {
           emptyCoveringsPerToken(i) += 1
+        }
       }
     }
     println("# empty coverings per token: " + emptyCoveringsPerToken.zipWithIndex.toList.toString)

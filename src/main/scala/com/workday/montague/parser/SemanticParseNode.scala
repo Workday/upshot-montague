@@ -18,7 +18,7 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
     logicalFormOption[LF].flatMap(fn)
   }
 
-  def isSemanticComplete = semantic.isInstanceOf[Form[_]]
+  def isSemanticComplete: Boolean = semantic.isInstanceOf[Form[_]]
 
   /**
    * Convert semantic state to Option
@@ -28,7 +28,7 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
    *
    * @return Some(lf) if semantic state is completed (that is, it's a Form), otherwise None
    */
-  def logicalFormOption[LF : ClassTag] = {
+  def logicalFormOption[LF : ClassTag]: Option[LF] = {
     import scala.reflect.classTag
     // As a work-around for the bug above, we throw our own exception if the implicit isn't supplied
     if (implicitly[ClassTag[LF]] == classTag[Nothing]) throw new IllegalArgumentException("ClassTag not supplied by caller")
@@ -80,13 +80,17 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
   /**
    * Find a node satisfying the predicate p among all nodes rooted at me
    */
-  def find(p: SemanticParseNode[S] => Boolean) = allNodes.find(p)
+  def find(p: SemanticParseNode[S] => Boolean): Option[SemanticParseNode[S]] = {
+    allNodes.find(p)
+  }
 
   /**
    * Find a node with completed semantic equal to the passed in logical form
    * @param lf the logical form to search for
    */
-  def findLogicalForm[LF : ClassTag](lf: LF) = find(_.mapLogicalForm[LF, Boolean](_ == lf).getOrElse(false))
+  def findLogicalForm[LF : ClassTag](lf: LF): Option[SemanticParseNode[S]] = {
+    find(_.mapLogicalForm[LF, Boolean](_ == lf).getOrElse(false))
+  }
 }
 
 /**
@@ -99,23 +103,25 @@ abstract class SemanticParseNode[S <: SyntacticLabel[S]](val syntactic: S, val s
  *       the chart.
  * @tparam S The syntactic scheme. In our case, CcgCat
  */
-case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: ParseToken, spans: Spans, x: Set[ClassCastException]) extends SemanticParseNode(s, m, x) {
+case class Terminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, parseToken: ParseToken, spans: Spans,
+                                            x: Set[ClassCastException]) extends SemanticParseNode(s, m, x) {
   override def toString: String = toStringHelp(withSemantics = true)
   def toStringHelp(indent: String = "", currentIndent: String = "", withSemantics: Boolean = false): String = {
     val str = "('" + s.toString + "', " + parseToken.toString() + ")"
-    if (withSemantics) m.toString + ", '" + str
-    else str
+
+    if (withSemantics) { m.toString + ", '" + str } else { str }
   }
 
   def toDotStringHelp(pre: String): String = {
-    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + escapeJava(s.toString + "\n" + m.toString + "\n" + parseTokenString) + "\"];\n" +
+    pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" +
+      escapeJava(s.toString + "\n" + m.toString + "\n" + parseTokenString) + "\"];\n" +
       "{rank = max; \"tokens\"; " + pre + "}\n"
   }
 
-  def parseTokens = List(parseToken)
-  def terminals = List(this)
-  def parseTokenString = parseToken.tokenString
-  def children = Nil
+  def parseTokens: List[ParseToken] = List(parseToken)
+  def terminals: List[Terminal[S]] = List(this)
+  def parseTokenString: String = parseToken.tokenString
+  def children: List[SemanticParseNode[S]] = Nil
 }
 
 /**
@@ -142,16 +148,16 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
     val argumentString = argumentNode.toStringHelp(indent=indent, currentIndent=nextIndent, withSemantics=false)
     val str = s"($spans, '" + s.toString + "', " + operatorString + ", \n" + indent + argumentString + ")"
 
-    if (withSemantics) meaningString + s",\n" + str
-    else str
+    if (withSemantics) { meaningString + s",\n" + str } else { str }
   }
+
   def toDotStringHelp(pre: String): String = {
     val sem = meaningString.replaceAll("(\\S),(\\S)", "$1, $2")  // Prettify a little by adding spaces after commas.
     val nodeText = escapeJava(sem + "\n" + s.toString)
     pre + " [shape=none,style=filled,fillcolor=lightblue,margin=0,pad=0,label=\"" + nodeText + "\"];\n" +
       s"$pre -> ${pre}1;\n" +
       s"$pre -> ${pre}2;\n" +
-      node1.toDotStringHelp(pre+"1") + node2.toDotStringHelp(pre+"2")
+      node1.toDotStringHelp(pre + "1") + node2.toDotStringHelp(pre + "2")
   }
 
   val meaningString: String = m match {
@@ -185,16 +191,15 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
   }
 
   private[this] def node1 = {
-    if (operatorNode.spans < argumentNode.spans) operatorNode
-    else argumentNode
+    if (operatorNode.spans < argumentNode.spans) { operatorNode } else { argumentNode }
   }
   private[this] def node2 = {
-    if (!(operatorNode.spans < argumentNode.spans)) operatorNode
-    else argumentNode
+    if (!(operatorNode.spans < argumentNode.spans)) { operatorNode } else { argumentNode }
   }
+
   def spans: Spans = node1.spans + node2.spans
-  def parseTokens = node1.parseTokens ++ node2.parseTokens
-  def terminals = node1.terminals ++ node2.terminals
-  def parseTokenString = node1.parseTokenString + " " + node2.parseTokenString
-  def children = node1 :: node2 :: Nil
+  def parseTokens: List[ParseToken] = node1.parseTokens ++ node2.parseTokens
+  def terminals: List[SemanticParseNode[S]] = node1.terminals ++ node2.terminals
+  def parseTokenString: String = node1.parseTokenString + " " + node2.parseTokenString
+  def children: List[SemanticParseNode[S]] = node1 :: node2 :: Nil
 }

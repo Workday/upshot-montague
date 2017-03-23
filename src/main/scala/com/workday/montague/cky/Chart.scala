@@ -12,19 +12,21 @@ class Chart[A: ClassTag](parseTokens: IndexedSeq[_]) {
     array(a)(b)
   }
 
-  def diagonal = {
-    for(i <- 0 to (n - 1)) yield array(i)(i)
+  def diagonal: IndexedSeq[A] = {
+    for(i <- 0 until n) yield array(i)(i)
   }
 
-  def allCells = {
-    for(spanLen <- 1 to n;
-        iStart <- 0 until n - spanLen + 1) yield {
-      val iEnd = iStart + spanLen - 1
-      (Spans(iStart, iEnd+1), array(iStart)(iEnd))
+  def allCells: IndexedSeq[(Spans, A)] = {
+    for {
+      spanLen <- 1 to n
+      iStart <- 0 until n - spanLen + 1
+      iEnd = iStart + spanLen - 1
+    } yield {
+      (Spans(iStart, iEnd + 1), array(iStart)(iEnd))
     }
   }
 
-  def update(a: Int, b: Int, c: A) = {
+  def update(a: Int, b: Int, c: A): Unit = {
     array(a)(b) = c
   }
 

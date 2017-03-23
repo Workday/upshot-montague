@@ -93,7 +93,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
 
   // http://stackoverflow.com/questions/3912753/scala-remove-duplicates-in-list-of-objects
   implicit class RichCollection[A, Repr](xs: IterableLike[A, Repr]){
-    def distinctBy[B, That](f: A => B)(implicit cbf: CanBuildFrom[Repr, A, That]) = {
+    def distinctBy[B, That](f: A => B)(implicit cbf: CanBuildFrom[Repr, A, That]): That = {
       val builder = cbf(xs.repr)
       val i = xs.iterator
       var set = Set[B]()

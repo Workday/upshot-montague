@@ -6,7 +6,7 @@ case class Spans(start: Int, end: Int) {
 
   override def toString: String = s"[$start,$end]"
 
-  def length = end - start
+  def length: Int = end - start
 
   def +(s2: Spans): Spans = {
     val s1 = this

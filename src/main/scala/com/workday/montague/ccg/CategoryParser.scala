@@ -16,11 +16,11 @@ object CategoryParser extends RegexParsers {
   def labelledAtom: Parser[CcgCat] = (atom ~ "[" ~ "[a-z]*".r ~ "]") ^^ { case atom ~ _ ~ label ~ _ => atom(label) }
 
   def atom: Parser[CcgCat] = np | n | pp | s | conj
-  def term = paren | labelledAtom | atom
-  def op = backward | forward | forwardBackward
-  def expr = op | term
+  def term: Parser[CcgCat] = paren | labelledAtom | atom
+  def op: Parser[CcgCat] = backward | forward | forwardBackward
+  def expr: Parser[CcgCat] = op | term
 
   def paren: Parser[CcgCat] = ("(" ~ expr ~ ")") ^^ { case _ ~ contents ~ _ => contents }
 
-  def apply(s: String) = parseAll(expr, s)
+  def apply(s: String):ParseResult[CcgCat] = parseAll(expr, s)
 }

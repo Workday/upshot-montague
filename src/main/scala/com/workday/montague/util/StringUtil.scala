@@ -8,7 +8,7 @@ object StringUtil {
    * Turns a parenthetical string (e.g. "are(writing(a(com.workday.montague.parser)))(and(joseph)(alex))")
    * into a pretty tree representation.
    */
-  def toPrettyTree(tree: String) = {
+  def toPrettyTree(tree: String): String = {
     var indent = 2
     val str = new StringBuilder("\n" + " " * indent)
 
