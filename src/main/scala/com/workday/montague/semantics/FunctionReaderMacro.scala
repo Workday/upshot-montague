@@ -54,7 +54,7 @@ trait Wrapper {
       .replaceAll("\\.([\\+\\-*/]|:\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
       .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
       .replaceAll("\\s\\((\\S*)\\)\\([\\w\\.]*\\.\\w+\\.canBuildFrom\\[[\\w\\.]*\\]\\)", " $1")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => x
-      .replaceAll("\\$\\w*\\$\\w*", "")  // e.g. SomeObject$default$2 => SomeObject
+      .replaceAll(", \\w*\\.apply\\$default\\$\\w*", "")  // Ignore default parameters (e.g. SomeObject.apply$default$2).
       .replaceAllLiterally("com.workday.montague.semantics.", "")
       .replaceAllLiterally("collection.this.", "")
       .replaceAllLiterally(".apply", "")
