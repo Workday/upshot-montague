@@ -177,7 +177,7 @@ case class NonTerminal[S <: SyntacticLabel[S]](s: S, m: SemanticState, operatorN
         }
 
         if (operatorNode.semantic.toString.contains("Lambda(")) {
-          val boundVariable = operatorNode.semantic.toString.split("Lambda\\(")(1).split(':')(0) // var is between "Lambda(" and ":"
+          val boundVariable = operatorNode.semantic.toString.split("Lambda\\(")(1).split(':')(0).replaceAllLiterally("(", "") // var is between "Lambda(" and ":"
           val boundArgument = argumentNode.semantic.toString
 
           predicate.replaceAll(s"\\b$boundVariable\\b", boundArgument)
