@@ -51,9 +51,9 @@ trait Wrapper {
     var cleanedUp = representation
       .replaceAll(", \\\".*?[^\\\\]\\\"\\)", ")")  // Remove expressions in quotes.
       .replaceAll("""\[.*?\]\(""", "(")  // Omit type parameters.
-      .replaceAll("\\.([\\+\\-*/]|:\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
+      .replaceAll("\\.([\\+\\-*/]|:\\+|\\+\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
       .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
-      .replaceAll("\\s\\((\\S*)\\)\\([\\w\\.]*\\.\\w+\\.canBuildFrom\\[[\\w\\.]*\\]\\)", " $1")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => x
+      .replaceAll("\\((\\S*)\\)\\((\\w+\\.)*(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", "$3($1)")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
       .replaceAll(", \\w*\\.apply\\$default\\$\\w*", "")  // Ignore default parameters (e.g. SomeObject.apply$default$2).
       .replaceAllLiterally("com.workday.montague.semantics.", "")
       .replaceAllLiterally("collection.this.", "")
