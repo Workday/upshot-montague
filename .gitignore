@@ -1,6 +1,5 @@
 *.sw?
 .idea
 .idea_modules
-data/lexicon.wsj02-21
 project
 target
