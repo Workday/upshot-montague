@@ -15,7 +15,7 @@ extends CkyParserWithList[SemanticParseNode[S]] {
 
   def main(args: Array[String]): Unit = {
     val input = args.mkString(" ")
-    val result = parse(input)
+    val result = parse(input, tokenizer)
     val output = result.bestParse.map(_.semantic.toString).getOrElse("(failed to parse)")
 
     println(s"Input: $input")
@@ -30,6 +30,8 @@ extends CkyParserWithList[SemanticParseNode[S]] {
     // Print out the best parse in ASCII format
     // println(result.bestParse.get.toString)
   }
+
+  val tokenizer: String => IndexedSeq[String] = defaultTokenizer
 
   def parse(str: String, tokenizer: String => IndexedSeq[String] = defaultTokenizer): SemanticParseResult[S] = {
     parse(tokenizer(str))

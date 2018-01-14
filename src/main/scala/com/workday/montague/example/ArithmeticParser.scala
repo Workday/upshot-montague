@@ -7,12 +7,9 @@ import com.workday.montague.semantics._
 case object Paren extends TerminalCat { val category = "Paren" } // syntactic category for parenthetical expressions
 
 object ArithmeticParser extends SemanticParser[CcgCat](ArithmeticLexicon.lexicon) {
-  def parse(str: String): SemanticParseResult[CcgCat] = parse(str, tokenizer = parenTokenizer)
-
   // We need a custom tokenizer to separate parentheses from adjoining terms
-  private def parenTokenizer(str: String) = {
-    str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
-  }
+  override val tokenizer: String => IndexedSeq[String] =
+    str => str.replace("(", " ( ").replace(")", " ) ").trim.toLowerCase.split("\\s+")
 }
 
 object ArithmeticLexicon {
