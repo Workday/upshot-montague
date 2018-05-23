@@ -150,15 +150,9 @@ Output: 200
 
 Using the CCGBank lexicon, we parse English sentences into syntax dependency trees.
 
-If you don't have the CCGBank lexicon, you can download an older version
-of it from [Julia Hockenmaier's site](http://juliahmr.cs.illinois.edu/CCGlexicon/):
-
-```sh
-pushd data/ && \
-wget http://juliahmr.cs.illinois.edu/CCGlexicon/lexicon.wsj02-21.gz && \
-gunzip lexicon.wsj02-21.gz && \
-popd
-```
+If you don't have the CCGBank lexicon, you can use an older version of it that we downloaded from
+[Julia Hockenmaier's site](http://juliahmr.cs.illinois.edu/). The lexicon is located at
+`data/lexicon.wsj02-21.gz`.
 
 You can then parse sentences using the old CCGBank lexicon as follows:
 

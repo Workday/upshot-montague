@@ -3,6 +3,8 @@ package com.workday.montague.semantics
 import SemanticImplicits._
 import com.workday.montague.util.StringUtil
 
+import scala.util.matching.Regex
+
 /**
  * This is either a lambda, or a completed state.
  * It can be in the Lambda state, where it is waiting for arguments.
@@ -36,25 +38,42 @@ trait SemanticState {
       }
     }
   }
+
+  /**
+    * Returns strings representing argument types for all curried parameters,
+    * in order of application, inside a Lambda.
+    *
+    * Returns Seq.empty for anything that's not a Lambda, or if
+    * [[FunctionReaderMacro]] wasn't used to create the Lambda.
+    */
+  def argTypeStrings: Seq[String] = {
+    SemanticState.lambdaArgTypeRegex.findAllMatchIn(toString).toList.map(_.group(1))
+  }
 }
 
-/// Lambda means the semantic state is in progress, and is still consuming arguments.
-case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState
+object SemanticState {
+  /** Matches type parameters in the string representation of a Lambda, as produced by [[FunctionReaderMacro]]. */
+  lazy val lambdaArgTypeRegex: Regex = """Lambda\(\w*: (\w*) =>""".r
+}
 
-/// Form (β-normal form) means the semantic state is not consuming arguments.
+// Lambda means the semantic state is in progress, and is still consuming arguments.
+case class Lambda[LF](k: SemanticState => SemanticState) extends SemanticState {
+}
+
+// Form (β-normal form) means the semantic state is not consuming arguments.
 case class Form[LF](value: LF) extends SemanticState {
   override def toString: String = value.toString
 }
 
-/// Represents a parse with no valid semantic outputs
+// Represents a parse with no valid semantic outputs
 case class Nonsense(ex: Set[ClassCastException] = Set()) extends SemanticState
 
-/// Represents a parse with more than one valid semantic output
+// Represents a parse with more than one valid semantic output
 case class Ambiguous(options: Set[SemanticState]) extends SemanticState {
   override def toString: String = s"Ambiguous(${options.mkString(", ")})"
 }
 
-/// Ignores semantics and simply stores the dependency tree (for purely syntactic parses)
+// Ignores semantics and simply stores the dependency tree (for purely syntactic parses)
 case class Ignored(tree: String) extends SemanticState {
   override def toString: String = StringUtil.toPrettyTree(tree)
 }
