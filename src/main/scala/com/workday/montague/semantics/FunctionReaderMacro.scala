@@ -48,7 +48,7 @@ trait Wrapper {
     //   From: Lambda(((o: myPackage.ObjectType) => (com.workday.montague.semantics.Lambda.apply[myPackage.Condition](new com.workday.montague.semantics.FunctionWrapper[com.workday.montague.semantics.SemanticState,com.workday.montague.semantics.SemanticState](com.workday.montague.semantics.SemanticImplicits.FuncToSemanticState[myPackage.Condition](((c: myPackage.Condition) => Choose.apply(o, c))), "((c: myPackage.Condition) => Choose.apply(o, c))")): com.workday.montague.semantics.SemanticState)))
     //     to: Lambda(o: ObjectType => Lambda(c: Condition => Choose(o, c)))
 
-    var cleanedUp = representation
+    representation
       .replaceAll(", \\\".*?[^\\\\]\\\"\\)", ")")  // Remove expressions in quotes.
       .replaceAll("""\[.*?\]\(""", "(")  // Omit type parameters.
       .replaceAll("\\.([\\+\\-*/]|:\\+|\\+\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
@@ -60,12 +60,8 @@ trait Wrapper {
       .replaceAllLiterally(".apply", "")
       .replaceAllLiterally(": SemanticState", "")
       .replaceAllLiterally("Seq", "List")  // (just for consistency)
-
-    while (cleanedUp.contains("new FunctionWrapper")) {
-      cleanedUp = cleanedUp.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")  // Remove FunctionWrapper invocations.
-    }
-
-    cleanedUp
+      .replaceAll("\n", "")
+      .withFunctionWrapperInvocationsRemoved
       .replaceAll(": [a-z]*\\.", ": ")  // Trim package names.
       .replaceAll("""^\((.*)\)$""", "$1")  // Remove parentheses ...
       .replaceAll("""\((.*)\) =>""", "$1 =>")  // etc ...
@@ -75,5 +71,16 @@ trait Wrapper {
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
+  }
+
+  implicit class RichString(str: String) {
+    private[semantics] def withFunctionWrapperInvocationsRemoved: String = {
+      val replaced = str.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
+      if (replaced == str) {
+        replaced
+      } else {
+        replaced.withFunctionWrapperInvocationsRemoved
+      }
+    }
   }
 }
