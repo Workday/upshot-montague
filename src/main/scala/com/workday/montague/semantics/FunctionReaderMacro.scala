@@ -54,6 +54,10 @@ trait Wrapper {
       .replaceAll("\\.([\\+\\-*/]|:\\+|\\+\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
       .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
       .replaceAll("\\((\\S*)\\)\\((\\w+\\.)*(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", "$3($1)")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
+      .replaceAll(
+        "\\((\\S*)\\.apply\\((\\S+(?:\\,\\s?\\S+)*)\\)\\)\\((\\w+\\.)*(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)",
+        "$4($1($2))"  // e.g. (x.apply(y))(collection.this.Seq.canBuildFrom[T]) => Seq(x(y))
+      )
       .replaceAll(", \\w*\\.apply\\$default\\$\\w*", "")  // Ignore default parameters (e.g. SomeObject.apply$default$2).
       .replaceAllLiterally("com.workday.montague.semantics.", "")
       .replaceAllLiterally("collection.this.", "")
@@ -71,6 +75,18 @@ trait Wrapper {
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
+      .replaceAll("\\b\\w+\\.(\\w+)\\b", "$1")  // e.g. package.Class => Class
+  }
+
+  implicit class RichString(str: String) {
+    private[semantics] def withFunctionWrapperInvocationsRemoved: String = {
+      val replaced = str.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
+      if (replaced == str) {
+        replaced
+      } else {
+        replaced.withFunctionWrapperInvocationsRemoved
+      }
+    }
   }
 
   implicit class RichString(str: String) {
