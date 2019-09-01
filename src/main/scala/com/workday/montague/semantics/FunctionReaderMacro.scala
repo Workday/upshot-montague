@@ -77,18 +77,7 @@ trait Wrapper {
       .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
       .replaceAll("\\b\\w+\\.(\\w+)\\b", "$1")  // e.g. package.Class => Class
   }
-
-  implicit class RichString(str: String) {
-    private[semantics] def withFunctionWrapperInvocationsRemoved: String = {
-      val replaced = str.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
-      if (replaced == str) {
-        replaced
-      } else {
-        replaced.withFunctionWrapperInvocationsRemoved
-      }
-    }
-  }
-
+  
   implicit class RichString(str: String) {
     private[semantics] def withFunctionWrapperInvocationsRemoved: String = {
       val replaced = str.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
