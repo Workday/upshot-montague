@@ -98,7 +98,7 @@ object SemanticImplicits {
           val result = func(lf)
           result match {
             case fn: SemanticState => fn
-            case res: LF => Form(res)
+            case _ => Form(result)
           }
         case _ => Nonsense()
       }
@@ -113,7 +113,7 @@ object SemanticImplicits {
             val result = func(lf)
             result match {
               case fn: SemanticState => fn
-              case res: LF => Form(res)
+              case _ => Form(result)
             }
           } else {
             Nonsense
