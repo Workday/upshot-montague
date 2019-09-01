@@ -79,11 +79,11 @@ case class Ignored(tree: String) extends SemanticState {
 }
 
 object λ {
-  def apply[LF](func: LF => _): SemanticState = {
+  def apply[LF : Manifest](func: LF => _): SemanticState = {
     Lambda(func)
   }
 
-  def apply[LF](func: PartialFunction[LF, _]): SemanticState = {
+  def apply[LF : Manifest](func: PartialFunction[LF, _]): SemanticState = {
     Lambda(func)
   }
 }
