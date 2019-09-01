@@ -17,7 +17,7 @@ package object semantics {
    *        Done[LFNode](Filter(Filter(r1, p), q))+7
    *    }
    */
-  def conjunction[LF](joiner: PartialFunction[(LF, LF), SemanticState]): SemanticState = {
+  def conjunction[LF : Manifest](joiner: PartialFunction[(LF, LF), SemanticState]): SemanticState = {
     Lambda[LF] { g: SemanticState =>
       Lambda[LF] { f: SemanticState =>
         Lambda[LF] { x: SemanticState =>

@@ -27,7 +27,7 @@ trait SemanticState {
           case ex: ClassCastException => Nonsense(Set(ex))
         }
       }
-      case Form(value) => Nonsense()
+      case Form(_) => Nonsense()
       case Nonsense(exs) => arg match {
         case Nonsense(exs2) => Nonsense(exs ++ exs2)
         case _ => Nonsense(exs)
@@ -91,7 +91,7 @@ object λ {
 object SemanticImplicits {
   implicit def LFToSemanticState[LF](value: LF): SemanticState = Form(value)
 
-  implicit def FuncToSemanticState[LF](func: LF => _): (SemanticState => SemanticState) = {
+  implicit def FuncToSemanticState[LF : Manifest](func: LF => _): SemanticState => SemanticState = {
     case Form(value) =>
       value match {
         case lf: LF =>
@@ -105,7 +105,7 @@ object SemanticImplicits {
     case _ => Nonsense()
   }
 
-  implicit def PartialFuncToSemanticState[LF](func: PartialFunction[LF, _]): (SemanticState => SemanticState) = {
+  implicit def PartialFuncToSemanticState[LF : Manifest](func: PartialFunction[LF, _]): SemanticState => SemanticState = {
     case Form(value) =>
       value match {
         case lf: LF =>

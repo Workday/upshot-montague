@@ -14,7 +14,7 @@ import io.Source.stdin
  * @tparam A action type
  * @tparam M model type
  */
-abstract class SemanticRepl[S <: SyntacticLabel[S], A, M](parser: SemanticParser[S]) {
+abstract class SemanticRepl[S <: SyntacticLabel[S], A : Manifest, M : Manifest](parser: SemanticParser[S]) {
   def main(args: Array[String]): Unit = {
     var model: M = initialModel
 
