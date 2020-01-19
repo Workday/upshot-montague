@@ -28,6 +28,11 @@ object FunctionReaderMacro {
   }
 }
 
+trait Wrapper {
+  val representation: String
+  override def toString: String = Wrapper.cleanUp(representation)
+}
+
 // A unary total function with a specified string representation.
 class FunctionWrapper[P, R](val fn: P => R, val representation: String) extends (P => R) with Wrapper {
   def apply(p: P): R = fn(p)
@@ -39,52 +44,45 @@ class PartialFunctionWrapper[P, R](val fn: PartialFunction[P, R], val representa
   def isDefinedAt(x: P): Boolean = fn.isDefinedAt(x)
 }
 
-trait Wrapper {
-  val representation: String
-
-  override def toString: String = {
-    // Clean up function representation by removing a bunch of ugly garbage.
-    // For example:
-    //   From: Lambda(((o: myPackage.ObjectType) => (com.workday.montague.semantics.Lambda.apply[myPackage.Condition](new com.workday.montague.semantics.FunctionWrapper[com.workday.montague.semantics.SemanticState,com.workday.montague.semantics.SemanticState](com.workday.montague.semantics.SemanticImplicits.FuncToSemanticState[myPackage.Condition](((c: myPackage.Condition) => Choose.apply(o, c))), "((c: myPackage.Condition) => Choose.apply(o, c))")): com.workday.montague.semantics.SemanticState)))
-    //     to: Lambda(o: ObjectType => Lambda(c: Condition => Choose(o, c)))
-
+object Wrapper {
+  /** Clean up function representation by removing a bunch of ugly garbage.
+   *  For example:
+   *    From: Lambda(((o: myPackage.ObjectType) => (com.workday.montague.semantics.Lambda.apply[myPackage.Condition](new com.workday.montague.semantics.FunctionWrapper[com.workday.montague.semantics.SemanticState,com.workday.montague.semantics.SemanticState](com.workday.montague.semantics.SemanticImplicits.FuncToSemanticState[myPackage.Condition](((c: myPackage.Condition) => Choose.apply(o, c))), "((c: myPackage.Condition) => Choose.apply(o, c))")): com.workday.montague.semantics.SemanticState)))
+   *      to: Lambda(o: ObjectType => Lambda(c: Condition => Choose(o, c)))
+   */
+  def cleanUp(representation: String): String = {
     representation
-      .replaceAll(", \\\".*?[^\\\\]\\\"\\)", ")")  // Remove expressions in quotes.
-      .replaceAll("""\[.*?\]\(""", "(")  // Omit type parameters.
-      .replaceAll("\\.([\\+\\-*/]|:\\+|\\+\\+)\\(", " $1 (")  // e.g. 1.+(2) => 1 + (2)
-      .replaceAll("SemanticImplicits\\.FuncToSemanticState\\((.*?)\\)", "$1")
-      .replaceAll("\\((\\S*)\\)\\((\\w+\\.)*(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)", "$3($1)")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
-      .replaceAll(
-        "\\((\\S*)\\.apply\\((\\S+(?:\\,\\s?\\S+)*)\\)\\)\\((\\w+\\.)*(\\w+)\\.canBuildFrom\\[[\\w\\.]*\\]\\)",
-        "$4($1($2))"  // e.g. (x.apply(y))(collection.this.Seq.canBuildFrom[T]) => Seq(x(y))
-      )
-      .replaceAll(", \\w*\\.apply\\$default\\$\\w*", "")  // Ignore default parameters (e.g. SomeObject.apply$default$2).
+      .replaceAll("\n", "")
       .replaceAllLiterally("com.workday.montague.semantics.", "")
+      .replaceAll(""", ".*?[^\\]"\)""", ")")  // Remove expressions in quotes.
+      .replaceAll("""\(reflect[\w.]*classType\[[\w.$]*\]\(classOf\[[\w.$]*\]\)\)""", "")  // Remove (reflect.this.ManifestFactory.classType[...](classOf[...]))
+      .replaceAll("""\[.*?\]\(""", "(")  // Omit type parameters.
+      .replaceAll("""\.([\+\-*/]|:\+|\+\+)\(""", " $1 (")  // e.g. 1.+(2) => 1 + (2)
+      .replaceAll("""SemanticImplicits\.FuncToSemanticState\((.*?)\)""", "$1")
+      .replaceAll("""\((\S*)\)\((\w+\.)*(\w+)\.canBuildFrom\[[\w.]*\]\)""", "$3($1)")  // e.g. (x)(collection.this.Seq.canBuildFrom[T]) => Seq(x)
+      .replaceAll("""\((\S*)\.apply\((\S+(?:\,\s?\S+)*)\)\)\((\w+\.)*(\w+)\.canBuildFrom\[[\w.]*\]\)""", "$4($1($2))")  // e.g. (x.apply(y))(collection.this.Seq.canBuildFrom[T]) => Seq(x(y))
       .replaceAllLiterally("collection.this.", "")
       .replaceAllLiterally(".apply", "")
       .replaceAllLiterally(": SemanticState", "")
       .replaceAllLiterally("Seq", "List")  // (just for consistency)
-      .replaceAll("\n", "")
-      .withFunctionWrapperInvocationsRemoved
-      .replaceAll(": [a-z]*\\.", ": ")  // Trim package names.
+      .replaceAllRepeatedly("""new FunctionWrapper\((.*?)\)""", "$1")  // remove all invocations of FunctionWrapper() itself
+      .replaceAll(""": [a-z]*\.""", ": ")  // Trim package names.
       .replaceAll("""^\((.*)\)$""", "$1")  // Remove parentheses ...
       .replaceAll("""\((.*)\) =>""", "$1 =>")  // etc ...
       .replaceAll("""=> \((.*)\)""", "=> $1")  // etc ...
-      .replaceAll("""=> \((.*)\)""", "=> $1")
-      .replaceAll("""\(\((.* => .*)\)\)""", "($1)")  // etc ...
-      .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
-      .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
-      .replaceAll("""\(\((.* => .*)\)\)""", "($1)")
-      .replaceAll("\\b\\w+\\.(\\w+)\\b", "$1")  // e.g. package.Class => Class
+      .replaceAll("""=> \((.*)\)""", "=> $1")  // etc ...
+      .replaceAllRepeatedly("""\(\((.* => .*)\)\)""", "($1)")  // etc ...
+      .replaceAll("""\b\w+\.([A-Z]\w+)\b""", "$1")  // e.g. package.Class => Class
+      .replaceAll(""", \w+\$default\$\d+""", "")  // Ignore default parameters (e.g. SomeObject$default$3).
   }
-  
+
   implicit class RichString(str: String) {
-    private[semantics] def withFunctionWrapperInvocationsRemoved: String = {
-      val replaced = str.replaceAll("new FunctionWrapper\\((.*?)\\)", "$1")
+    def replaceAllRepeatedly(regex: String, replacement: String): String = {
+      val replaced = str.replaceAll(regex, replacement)
       if (replaced == str) {
         replaced
       } else {
-        replaced.withFunctionWrapperInvocationsRemoved
+        replaced.replaceAllRepeatedly(regex, replacement)
       }
     }
   }
